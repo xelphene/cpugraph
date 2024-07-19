@@ -1,6 +1,7 @@
 
 'use strict';
 
+const {NodeValue}  =require('../consts');
 const {Node} = require('./node');
 
 class InputNode extends Node {
@@ -10,7 +11,13 @@ class InputNode extends Node {
     }
     
     set value (v) {
+        if( typeof(v) != 'object' )
+            v = new NodeValue(this, v);
+        else
+            v[NODE] = this;
+        
         this._value = v;
+        
         this.sayChanged();
     }
     

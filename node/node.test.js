@@ -17,13 +17,13 @@ test('depvary', () =>
     t.i2 = new InputNode();
     t.i2.debugName = 'i2';
     
-    t.inc = new InputNode();
-    t.inc.debugName = 'inc';
+    t.mode = new InputNode();
+    t.mode.debugName = 'mode';
     
     //t.c = new ComputeNode( (i, t) => t.i2 + i,  [i1, t] );
     t.c = new ComputeNode(
         (i, t) => {
-            if( t.inc )
+            if( t.mode=='inc' )
                 return i + 1;
             else
                 return i + t.i2
@@ -34,11 +34,11 @@ test('depvary', () =>
 
     i1.value = 1;
     t.i2.value = 10;
-    t.inc.value = true;
+    t.mode.value = 'inc';
 
     expect( 0 + t.c.value ).toBe( 2 );
     expect( t.c.hearingFromNodes ).toContain( i1 );
-    expect( t.c.hearingFromNodes ).toContain( t.inc );
+    expect( t.c.hearingFromNodes ).toContain( t.mode );
     expect( t.c.hearingFromNodes ).not.toContain( t.i2 );
     expect( t.c.fresh ).toBe( true );
     expect( t.c.computeCount ).toBe( 1 );
@@ -50,11 +50,11 @@ test('depvary', () =>
     expect( 0 + t.c.value ).toBe( 2 );
     expect( t.c.computeCount ).toBe( 1 );
     expect( t.c.hearingFromNodes ).toContain( i1 );
-    expect( t.c.hearingFromNodes ).toContain( t.inc );
+    expect( t.c.hearingFromNodes ).toContain( t.mode );
     expect( t.c.hearingFromNodes ).not.toContain( t.i2 );
     
     //console.log(`changing inputs...`);
-    t.inc.value = false;
+    t.mode.value = 'add';
     t.i2.value = 100;
     
     expect( t.c.fresh ).toBe( false );
@@ -63,7 +63,7 @@ test('depvary', () =>
     expect( t.c.computeCount ).toBe( 2 );
 
     expect( t.c.hearingFromNodes ).toContain( i1 );
-    expect( t.c.hearingFromNodes ).toContain( t.inc );
+    expect( t.c.hearingFromNodes ).toContain( t.mode );
     expect( t.c.hearingFromNodes ).toContain( t.i2 );
 });
 
