@@ -1,0 +1,14 @@
+{
+  "name": "cpugraph",
+  "version": "0.0.1",
+  "description": "Reinventing React for fun",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Steve Benson",
+  "license": "GPLv3",
+  "devDependencies": {
+    "jest": "<29.0.0"
+  }
+}
