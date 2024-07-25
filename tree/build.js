@@ -31,7 +31,8 @@ class BuildProxy
             n.debugName = key;
             Object.defineProperty(o, key, {
                 get: () => n.value,
-                configurable: true
+                configurable: true,
+                enumerable: true,
             });
             return true;
         }
@@ -45,7 +46,8 @@ class BuildProxy
                 set: v  => {
                     //console.log(`intermediate InputNode set called. v=${v}`);
                     n.value = v
-                }
+                },
+                enumerable: true
             });
             return true;
         }
@@ -77,6 +79,13 @@ function build (root, opts)
         //    if( opts.bind[i] instanceof PotentialNode )
         //        opts.bind[i] = opts.bind[i][pbExist]();
     }
+
+    // do this?
+    /*
+    [Symbol.for('nodejs.util.inspect.custom')] () {
+        return util.inspect( ... );
+    }
+    */
     
     const bp = new BuildProxy(opts.bind);
     
