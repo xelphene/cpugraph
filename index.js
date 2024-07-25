@@ -5,3 +5,4 @@ exports.NODE = require('./consts').NODE;
 exports.ComputeNode = require('./node/compute').ComputeNode;
 exports.InputNode = require('./node/input').InputNode;
 exports.tree = require('./tree');
+exports.nodeOf = require('./consts').nodeOf;

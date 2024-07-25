@@ -14,3 +14,10 @@ class NodeValue {
     }
 }
 exports.NodeValue = NodeValue;
+
+exports.nodeOf = function(x) {
+    if( typeof(x)==='object' && x.hasOwnProperty(exports.NODE) )
+        return x[exports.NODE];
+    else
+        throw new Error('value has no node');
+}

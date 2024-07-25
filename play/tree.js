@@ -1,7 +1,7 @@
 
 'use strict';
 
-const {NODE} = require('../');
+const {NODE, nodeOf} = require('../');
 const {build, unwrap, input} = require('../tree');
 
 function main ()
@@ -26,6 +26,9 @@ function main ()
     
     T.j = 200;
     console.log( 0+T.c );
+    
+    //console.log( T );
+    console.log( nodeOf(T.c) );
 }
 
 if( require.main === module )
