@@ -26,6 +26,8 @@ class ComputeNode extends Node {
         this._fresh = false;
     }
 
+    get settable () { return false }
+
     get fresh () { return this._fresh }
     get computeCount () { return this._computeCount }
     

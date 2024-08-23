@@ -121,3 +121,30 @@ test('nest', () =>
     expect( t.c.hearingFromNodes ).toContain( t.i );
 });
 
+test('assign_other', () =>
+{
+    var ei = new InputNode({debugName:'ei'});
+    ei.value = 10;
+    
+    var ec = new ComputeNode({
+        bind: [ei],
+        func: ei => 222 + ei,
+        debugName: 'ec'
+    });
+
+    var ET = build();
+    ET.d = () => 300;
+
+    var T = build();
+    
+    T.ei = ei;
+    T.ec = ec;
+    T.et_d = ET.d;
+    
+    T = unwrap(T);
+    
+    expect( 0+T.ei ).toBe( 10 );
+    expect( 0+T.ec ).toBe( 232 );
+    expect( 0+T.et_d ).toBe( 300 );
+
+});

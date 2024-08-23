@@ -2,6 +2,8 @@
 'use strict';
 
 const {ORIG, input} = require('./consts');
+const {nodeOf, hasNode} = require('../consts.js');
+const {Node} = require('../node/node');
 const {ComputeNode} = require('../node/compute');
 const {InputNode} = require('../node/input');
 
@@ -49,6 +51,40 @@ class BuildProxy
                 },
                 enumerable: true
             });
+            return true;
+        }
+        
+        if( hasNode(v) ) {
+            if( nodeOf(v).settable ) {
+                Object.defineProperty( o, key, {
+                    get: () => nodeOf(v).value,
+                    set: x => { nodeOf(v).value = x },
+                    enumerable: true
+                });
+            } else {
+                Object.defineProperty( o, key, {
+                    get: () => nodeOf(v).value,
+                    configurable: true,
+                    enumerable: true
+                });
+            }
+            return true;
+        }
+
+        if( v instanceof Node ) {
+            if( v.settable ) {
+                Object.defineProperty( o, key, {
+                    get: () => v.value,
+                    set: x => { v.value = x },
+                    enumerable: true
+                });
+            } else {
+                Object.defineProperty( o, key, {
+                    get: () => v.value,
+                    configurable: true,
+                    enumerable: true
+                });
+            }
             return true;
         }
         

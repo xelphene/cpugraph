@@ -21,3 +21,10 @@ exports.nodeOf = function(x) {
     else
         throw new Error('value has no node');
 }
+
+exports.hasNode = function(x) {
+    if( typeof(x)==='object' && x.hasOwnProperty(exports.NODE) )
+        return true;
+    else
+        return false;
+}

@@ -1,7 +1,7 @@
 
 'use strict';
 
-const {NodeValue}  =require('../consts');
+const {NODE, NodeValue}  =require('../consts');
 const {Node} = require('./node');
 
 class InputNode extends Node {
@@ -23,5 +23,7 @@ class InputNode extends Node {
     get value () {
         return this._value;
     }
+    
+    get settable () { return true }
 }
 exports.InputNode = InputNode;
