@@ -94,20 +94,25 @@ test('rebuild', () =>
     expect( 0+T.z ).toBe( 1 );
 });
 
-/*
+
 test('nest', () =>
 {
     var t = {};
     t.s = {};
 
-    t.i = new InputNode();
+    t.i = new InputNode({});
     t.i.debugName = 't.i';
 
-    t.s.x = new ComputeNode( () => 222, [] );
-    t.s.x.debugName = 't.s.x';
+    t.s.x = new ComputeNode({
+        func: () => 222,
+        debugName: 't.s.x'
+    });
 
-    t.c = new ComputeNode( t => t.s.x + t.i, [t] );
-    t.c.debugName = 'c';
+    t.c = new ComputeNode({
+        bind: [t],
+        func: t => t.s.x + t.i,
+        debugName: 'c'
+    });
 
     t.i.value = 0.1;
     
@@ -115,4 +120,4 @@ test('nest', () =>
     expect( t.c.hearingFromNodes ).toContain( t.s.x );
     expect( t.c.hearingFromNodes ).toContain( t.i );
 });
-*/
+
