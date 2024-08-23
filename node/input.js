@@ -5,9 +5,8 @@ const {NodeValue}  =require('../consts');
 const {Node} = require('./node');
 
 class InputNode extends Node {
-    constructor() {
-        super();
-        this._debugName = '[InputNode]';
+    constructor({debugName}) {
+        super({debugName});
     }
     
     set value (v) {

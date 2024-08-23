@@ -26,9 +26,11 @@ class BuildProxy
         this.log(`SET. ${key.toString()} = ${v.toString()}`);
         
         if( typeof(v)=='function' ) {
-            //o[key] = new ComputeNode( v, this._bindings );
-            let n = new ComputeNode( v, this._bindings );
-            n.debugName = key;
+            let n = new ComputeNode({
+                bind: this._bindings,
+                func: v,
+                debugName: key
+            });
             Object.defineProperty(o, key, {
                 get: () => n.value,
                 configurable: true,
@@ -38,9 +40,7 @@ class BuildProxy
         }
         
         if( v===input ) {
-            //o[key] = new InputNode();
-            let n = new InputNode();
-            n.debugName = key;
+            let n = new InputNode({debugName: key});
             Object.defineProperty( o, key, {
                 get: () => n.value,
                 set: v  => {

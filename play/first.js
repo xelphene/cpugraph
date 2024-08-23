@@ -5,23 +5,38 @@ const {ComputeNode} = require('../');
 
 var t = {};
 
-t.a = new ComputeNode( () => 1, [] );
-t.a.debugName = 'a';
+t.a = new ComputeNode({
+    bind: [],
+    func: () => 1,
+    debugName: 'a',
+});
 
-var b   = new ComputeNode( () => 10, [] );
+var b   = new ComputeNode({
+    bind: [],
+    func: () => 10
+});
 b.debugName = 'b';
 
-t.b2 = new ComputeNode( a => a+1, [t.a] );
-t.b2.debugName = 'b2';
+t.b2 = new ComputeNode({
+    bind: [t.a],
+    func: a => a+1,
+    debugName: 'b2'
+});
 
-var w = new ComputeNode( () => 0.1, [] );
-w.debugName = 'w';
+var w = new ComputeNode({
+    bind: [],
+    func: () => 0.1,
+    debugName: 'w'
+});
 Object.defineProperty( t, 'w', {
     get: () => w.value
 });
 
-var c = new ComputeNode( (t,b) => t.a + b + t.b2 + t.w, [t, b]);
-c.debugName = 'c';
+var c = new ComputeNode({
+    bind: [t,b],
+    func: (t,b) => t.a + b + t.b2 + t.w,
+    debugName: 'c'
+});
 
 console.log('---');
 console.log(0+c.value);

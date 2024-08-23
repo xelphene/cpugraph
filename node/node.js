@@ -4,10 +4,14 @@
 const {Channel} = require('./channel');
 
 class Node {
-    constructor () {
+    constructor ({debugName}) {
         this._speakingTo = new Set();
         this._hearingFrom = new Set();
-        this._debugName = '[Node]';
+
+        if( debugName!==undefined )
+            this._debugName = debugName;
+        else
+            this._debugName = '[Node]';
     }
     
     get debugName ()  { return this._debugName }

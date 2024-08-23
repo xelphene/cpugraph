@@ -6,20 +6,21 @@ const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 
 class ComputeNode extends Node {
-    constructor(computeFunc, bindings) {
-        super();
-        if( typeof(computeFunc) != 'function' )
-            throw new TypeError(`function required for computeFunc`);
-        this._computeFunc = computeFunc;
-        
-        for( let i=0; i<bindings.length; i++ ) {
-            if( typeof( bindings[i] ) != 'object' )
+    constructor({func, bind, debugName}) {
+        super({debugName});
+        if( typeof(func) != 'function' )
+            throw new TypeError(`function required for func`);
+        this._computeFunc = func;
+
+        if( bind===undefined )
+            bind=[];        
+        for( let i=0; i<bind.length; i++ ) {
+            if( typeof( bind[i] ) != 'object' )
                 throw new TypeError(`object required for binding ${i}`);
         }
-        this._bindings = bindings;
+        this._bindings = bind;
         this._dependsOn = new Set();
-        this._debugName = '[ComputeNode]';
-
+        
         this._computeCount = 0;
         this._value = null;
         this._fresh = false;

@@ -5,26 +5,26 @@ const {ComputeNode, InputNode} = require('../');
 
 var t = {};
 
-var i1 = new InputNode();
+var i1 = new InputNode({});
 i1.debugName = 'i1';
 
-t.i2 = new InputNode();
+t.i2 = new InputNode({});
 t.i2.debugName = 'i2';
 
-t.inc = new InputNode();
+t.inc = new InputNode({});
 t.inc.debugName = 'inc';
 
 //t.c = new ComputeNode( (i, t) => t.i2 + i,  [i1, t] );
-t.c = new ComputeNode(
-    (i, t) => {
+t.c = new ComputeNode({
+    bind: [i1, t],
+    func: (i, t) => {
         if( t.inc )
             return i + 1;
         else
             return i + t.i2
     },
-    [i1, t]
-);
-t.c.debugName = 'c';
+    debugName: 'c'
+});
 
 i1.value = 1;
 t.i2.value = 10;
