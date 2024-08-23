@@ -64,6 +64,36 @@ test('depvary', () =>
     
 });
 
+test('rebuild', () =>
+{
+    var T = build();
+        
+    T.i = input;
+    T.j = input;
+    T.c = t => t.i + t.j;
+    T.d = t => t.i * 2;
+    T = unwrap(T);
+    
+    T.i = 10;
+    T.j = 20;
+
+    expect( 0+T.c ).toBe( 30 );
+    expect( 0+T.d ).toBe( 20 );
+    
+    T.setIJ = function (newI, newJ) {
+        this.i = newI;
+        this.j = newJ;
+    }
+    
+    T = build(T);
+    T.z = t => t.j - t.i;
+    T = unwrap(T);
+    
+    T.setIJ(1,2);
+    expect( 0+T.c ).toBe( 3 );
+    expect( 0+T.z ).toBe( 1 );
+});
+
 /*
 test('nest', () =>
 {
