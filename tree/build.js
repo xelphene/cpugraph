@@ -2,7 +2,8 @@
 'use strict';
 
 const {ORIG, input} = require('./consts');
-const {nodeOf, hasNode, NODE} = require('../consts.js');
+const {NODE} = require('../consts.js');
+const {nodeOf, hasNode} = require('../node/util.js');
 const {Node} = require('../node/node');
 const {ComputeNode} = require('../node/compute');
 const {InputNode} = require('../node/input');

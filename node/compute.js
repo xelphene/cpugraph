@@ -1,7 +1,8 @@
 
 'use strict';
 
-const {hasNode, NODE, NodeValue} = require('../consts');
+const {NODE} = require('../consts');
+const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 

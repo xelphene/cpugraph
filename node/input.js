@@ -1,7 +1,8 @@
 
 'use strict';
 
-const {NODE, NodeValue}  =require('../consts');
+const {NODE} = require('../consts');
+const {NodeValue} = require('./util');
 const {Node} = require('./node');
 
 class InputNode extends Node {
