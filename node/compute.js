@@ -1,7 +1,7 @@
 
 'use strict';
 
-const {NODE} = require('../consts');
+const {NODE, DEBUG} = require('../consts');
 const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
@@ -33,7 +33,8 @@ class ComputeNode extends Node {
     get computeCount () { return this._computeCount }
     
     log(msg) {
-        console.log(`${this.debugName}: ${msg}`);
+        if( DEBUG )
+            console.log(`${this.debugName}: ${msg}`);
     }
     
     // only called from DTProxyHandler and ComputeNode.compute()

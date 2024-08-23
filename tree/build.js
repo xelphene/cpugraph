@@ -1,7 +1,7 @@
 
 'use strict';
 
-const {ORIG, input} = require('./consts');
+const {ORIG, input, DEBUG} = require('./consts');
 const {NODE} = require('../consts.js');
 const {nodeOf, hasNode} = require('../node/util.js');
 const {Node} = require('../node/node');
@@ -15,7 +15,8 @@ class BuildProxy
     }
     
     log( msg ) {
-        console.log(`BuildProxy: ${msg}`);
+        if( DEBUG )
+            console.log(`BuildProxy: ${msg}`);
     }
 
     get( o, key ) {

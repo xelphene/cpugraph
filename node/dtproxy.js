@@ -2,7 +2,7 @@
 'use strict';
 
 const {Node} = require('./node');
-const {hasNode, NODE} = require('../consts');
+const {hasNode, NODE, DEBUG} = require('../consts');
 
 class DTProxyHandler {
     constructor(listener) {
@@ -10,7 +10,8 @@ class DTProxyHandler {
     }
     
     log(msg) {
-        console.log(`DTProxy(${this._listener.debugName}): ${msg}`);
+        if( DEBUG )
+            console.log(`DTProxy(${this._listener.debugName}): ${msg}`);
     }
     
     //has(o, key) {}
