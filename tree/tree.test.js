@@ -148,3 +148,36 @@ test('assign_other', () =>
     expect( 0+T.et_d ).toBe( 300 );
 
 });
+
+test('node_back_ref', () =>
+{
+    var ei = new InputNode({debugName:'ei'});
+    ei.value = 10;
+    
+    var ec = new ComputeNode({
+        bind: [ei],
+        func: ei => 222 + ei,
+        debugName: 'ec'
+    });
+
+    var ET = build();
+    ET.d = () => 300;
+
+    var T = build();
+    
+    T.i = input;
+    T.ei = ei;
+    T.ec = ec;
+    T.et_d = ET.d;
+    
+    var t = unwrap(T);
+    t.i = 100;
+    
+    expect( T.ei===ei ).toBe( true );
+    expect( T.ec===ec ).toBe( true );
+    expect( T.i instanceof InputNode ).toBe( true );
+    expect( T.i.value == 100 ).toBe( true );
+    expect( T.et_d instanceof ComputeNode ).toBe( true );
+    expect( T.et_d.value == 300 ).toBe( true );
+
+});

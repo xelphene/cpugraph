@@ -2,7 +2,7 @@
 'use strict';
 
 const {ORIG, input} = require('./consts');
-const {nodeOf, hasNode} = require('../consts.js');
+const {nodeOf, hasNode, NODE} = require('../consts.js');
 const {Node} = require('../node/node');
 const {ComputeNode} = require('../node/compute');
 const {InputNode} = require('../node/input');
@@ -21,6 +21,10 @@ class BuildProxy
         if( key===ORIG )
             return o;
         
+        let opd = Object.getOwnPropertyDescriptor(o, key);
+        if( opd && opd.get && opd.get[NODE] )
+            return opd.get[NODE];
+        
         return Reflect.get(o, key);
     }
     
@@ -33,8 +37,10 @@ class BuildProxy
                 func: v,
                 debugName: key
             });
+            let g = () => n.value;
+            g[NODE] = n;
             Object.defineProperty(o, key, {
-                get: () => n.value,
+                get: g,
                 configurable: true,
                 enumerable: true,
             });
@@ -43,8 +49,10 @@ class BuildProxy
         
         if( v===input ) {
             let n = new InputNode({debugName: key});
+            let g = () => n.value;
+            g[NODE] = n;
             Object.defineProperty( o, key, {
-                get: () => n.value,
+                get: g,
                 set: v  => {
                     //console.log(`intermediate InputNode set called. v=${v}`);
                     n.value = v
@@ -55,15 +63,17 @@ class BuildProxy
         }
         
         if( hasNode(v) ) {
+            let g = () => nodeOf(v).value;
+            g[NODE] = nodeOf(v);
             if( nodeOf(v).settable ) {
                 Object.defineProperty( o, key, {
-                    get: () => nodeOf(v).value,
+                    get: g,
                     set: x => { nodeOf(v).value = x },
                     enumerable: true
                 });
             } else {
                 Object.defineProperty( o, key, {
-                    get: () => nodeOf(v).value,
+                    get: g,
                     configurable: true,
                     enumerable: true
                 });
@@ -72,15 +82,17 @@ class BuildProxy
         }
 
         if( v instanceof Node ) {
+            let g = () => v.value;
+            g[NODE] = v;
             if( v.settable ) {
                 Object.defineProperty( o, key, {
-                    get: () => v.value,
+                    get: g,
                     set: x => { v.value = x },
                     enumerable: true
                 });
             } else {
                 Object.defineProperty( o, key, {
-                    get: () => v.value,
+                    get: g,
                     configurable: true,
                     enumerable: true
                 });
