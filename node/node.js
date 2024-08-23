@@ -1,6 +1,7 @@
 
 'use strict';
 
+const {NODE} = require('../consts');
 const {Channel} = require('./channel');
 
 class Node {
@@ -46,5 +47,7 @@ class Node {
     rmSpeakChannel  (c) { this._speakingTo.delete(c); }
     addHearChannel  (c) { this._hearingFrom.add(c); }
     rmHearChannel   (c) { this._hearingFrom.delete(c); }
+
+    get [NODE] () { return this }
 }
 exports.Node = Node;
