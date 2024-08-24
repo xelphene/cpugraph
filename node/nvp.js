@@ -3,11 +3,22 @@
 
 const {NODE} = require('../consts');
 
-
 const nodeValueProxyHandler = {
+    getPrototypeOf: node => {
+        return Object.getPrototypeOf(node.rawValue);
+    },
     get: (node, key) => {
+        //console.log(`NVP GET ${key.toString()}`);
         if( key===NODE )
             return node;
+        if( key=='hasOwnProperty' )
+            return p => {
+                //console.log(`hawOwnProperty ${p.toString()}`);
+                if( p===NODE )
+                    return node;
+                else
+                    return node.rawValue.hasOwnProperty(p);
+            }
         return Reflect.get(node.rawValue, key);
     },
     set: (node, key, value) => {
@@ -32,6 +43,7 @@ const nodeValueProxyHandler = {
         return node.rawValue.keys().concat(NODE);
     },
     has: (node, key) => {
+        //console.log(key);
         if( key===NODE )
             return true;
         return key in node.rawValue || node.rawValue.hasItem(key);
@@ -43,6 +55,7 @@ const nodeValueProxyHandler = {
         return node.rawValue;
     },
     getOwnPropertyDescriptor: (node, key) => {
+        //console.log(key);
         if( key===NODE )
             return {
                 value: node,
