@@ -4,6 +4,7 @@
 const {NODE} = require('../consts');
 const {NodeValue} = require('./util');
 const {Node} = require('./node');
+const {getNodeValueProxy} = require('./nvp');
 
 class InputNode extends Node {
     constructor({debugName}) {
@@ -13,16 +14,18 @@ class InputNode extends Node {
     set value (v) {
         if( typeof(v) != 'object' )
             v = new NodeValue(this, v);
-        else
-            v[NODE] = this;
         
         this._value = v;
         
         this.sayChanged();
     }
     
-    get value () {
+    get rawValue () {
         return this._value;
+    }
+    
+    get value () {
+        return getNodeValueProxy(this);
     }
     
     get settable () { return true }

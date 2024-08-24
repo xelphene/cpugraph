@@ -6,7 +6,7 @@ const {NODE} = require('../consts');
 
 class NodeValue {
     constructor(node, value) {
-        this[NODE] = node;
+        //this[NODE] = node;
         this.value = value;
     }
     [Symbol.toPrimitive](hint) {

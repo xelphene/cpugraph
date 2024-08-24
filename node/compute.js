@@ -5,6 +5,7 @@ const {NODE, DEBUG} = require('../consts');
 const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
+const {getNodeValueProxy} = require('./nvp');
 
 class ComputeNode extends Node {
     constructor({func, bind, debugName}) {
@@ -87,20 +88,26 @@ class ComputeNode extends Node {
         //this.log(`call with ${args}`);
         let v = this._computeFunc.apply(null, args);
         //this.log(`result ${v}`);
+
         if( typeof(v) != 'object' )
             v = new NodeValue(this, v);
-        else
-            v[NODE] = this;
 
         this._computeCount++;
         this._value = v;
         this._fresh = true;
     }
-    
-    get value () {
+
+    // should *only* be called from nodeValueProxyHandler
+    get rawValue () { 
         if( ! this._fresh )
             this.compute();
         return this._value;
+    }
+        
+    get value () {
+        if( ! this._fresh )
+            this.compute();
+        return getNodeValueProxy( this );
     }
 }
 exports.ComputeNode = ComputeNode;
