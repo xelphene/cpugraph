@@ -31,7 +31,7 @@ class BuildProxy
     }
     
     set( o, key, v ) {
-        this.log(`SET. ${key.toString()} = ${v.toString()}`);
+        //this.log(`SET. ${key.toString()} = ${v.toString()}`);
         
         if( typeof(v)=='function' ) {
             let n = new ComputeNode({
