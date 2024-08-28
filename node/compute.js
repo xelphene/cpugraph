@@ -105,8 +105,8 @@ class ComputeNode extends Node {
     }
         
     get value () {
-        if( ! this._fresh )
-            this.compute();
+        //if( ! this._fresh )
+        //    this.compute();
         return getNodeValueProxy( this );
     }
 }
