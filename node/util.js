@@ -26,7 +26,12 @@ function nodeOf (x) {
 exports.nodeOf = nodeOf;
 
 function isNode (x) {
-    return typeof(x)=='object' && x instanceof Node;
+    // done in this order to avoid premature computes via NodeValueProxy
+    if( typeof(x)=='object' && x.hasOwnProperty(NODE) )
+        return true;
+    if( typeof(x)=='object' && x instanceof Node )
+        return true;
+    return false;
 }
 exports.isNode = isNode;
 
