@@ -7,8 +7,10 @@ const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
 
 class InputNode extends Node {
-    constructor({debugName}) {
+    constructor({debugName, value}) {
         super({debugName});
+        if( value!==undefined )
+            this.value = value;
     }
     
     set value (v) {
