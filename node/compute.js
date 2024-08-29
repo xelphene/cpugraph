@@ -8,19 +8,23 @@ const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
 
 class ComputeNode extends Node {
-    constructor({func, bind, debugName}) {
+    constructor({func, bind, bindThis, debugName}) {
         super({debugName});
         if( typeof(func) != 'function' )
             throw new TypeError(`function required for func`);
         this._computeFunc = func;
 
         if( bind===undefined )
-            bind=[];        
+            bind=[];
         for( let i=0; i<bind.length; i++ ) {
             if( typeof( bind[i] ) != 'object' )
                 throw new TypeError(`object required for binding ${i}`);
         }
         this._bindings = bind;
+        if( bindThis===undefined )
+            this._bindThis=null;
+        else
+            this._bindThis=bindThis;
         this._dependsOn = new Set();
         
         this._computeCount = 0;
@@ -75,7 +79,14 @@ class ComputeNode extends Node {
                 rv.push( new Proxy(b, new DTProxyHandler(this) ));
             }
         }
-        return rv;
+        
+        if( this._bindThis===null )
+            var thisArg = null;
+        else {
+            var thisArg = new Proxy(this._bindThis, new DTProxyHandler(this) );
+        }
+        
+        return [thisArg, rv];
     }
     
     compute() {
@@ -84,9 +95,9 @@ class ComputeNode extends Node {
         this._fresh = false;
         // TODO: staticDeps option for optimization
         this.unlistenAll();
-        let args = this._getArgs();
+        let [thisArg, args] = this._getArgs();
         //this.log(`call with ${args}`);
-        let v = this._computeFunc.apply(null, args);
+        let v = this._computeFunc.apply(thisArg, args);
         //this.log(`result ${v}`);
 
         if( typeof(v) != 'object' )
