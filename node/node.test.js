@@ -1,7 +1,9 @@
 
 'use strict';
 
-const {ComputeNode, InputNode} = require('../');
+const {ComputeNode} = require('./compute');
+const {InputNode} = require('./input');
+const {StretchNode} = require('./stretch');
 
 beforeEach( () => {
     global.console = require('console');
@@ -91,4 +93,28 @@ test('nest', () =>
     expect( 0+t.c.value ).toBe( 222.1 );
     expect( t.c.hearingFromNodes ).toContain( t.s.x );
     expect( t.c.hearingFromNodes ).toContain( t.i );
+});
+
+test('stretch', () =>
+{
+    const t = {};
+    
+    t.i = new InputNode({});
+    t.m = new ComputeNode({
+        bind: [t],
+        func: t => t.i + 10
+    });
+    t.s = new StretchNode({
+        maxNode: t.m
+    });
+
+    t.i.value = 5;
+    t.s.value = 12;
+
+    expect( 0+t.s.value ).toBe( 12 );
+    t.i.value = 1;
+    expect( 0+t.s.value ).toBe( 11 );
+    t.i.value = 6;
+    expect( 0+t.s.value ).toBe( 12 );
+
 });
