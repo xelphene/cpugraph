@@ -5,7 +5,8 @@ const {NODE} = require('../consts');
 const {Channel} = require('./channel');
 
 class Node {
-    constructor ({debugName}) {
+    constructor ({universe, debugName}) {
+        this._universe = universe;
         this._speakingTo = new Set();
         this._hearingFrom = new Set();
 
@@ -15,6 +16,7 @@ class Node {
             this._debugName = '[Node]';
     }
     
+    get universe ()   { return this._universe }
     get debugName ()  { return this._debugName }
     set debugName (n) { this._debugName = n }
     

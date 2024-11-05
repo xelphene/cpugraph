@@ -10,7 +10,8 @@ const {InputNode} = require('../node/input');
 
 class BuildProxy
 {
-    constructor( bindings ) {
+    constructor( universe, bindings ) {
+        this._universe = universe;
         this._bindings = bindings;
     }
     
@@ -34,7 +35,13 @@ class BuildProxy
         //this.log(`SET. ${key.toString()} = ${v.toString()}`);
         
         if( typeof(v)=='function' ) {
-            let n = new ComputeNode({
+            //let n = new ComputeNode({
+            //    universe: this._universe,
+            //    bind: this._bindings,
+            //    func: v,
+            //    debugName: key
+            //});
+            let n = this._universe.addCompute({
                 bind: this._bindings,
                 func: v,
                 debugName: key
@@ -50,7 +57,8 @@ class BuildProxy
         }
         
         if( v===input ) {
-            let n = new InputNode({debugName: key});
+            //let n = new InputNode({universe: this._universe, debugName: key});
+            let n = this._universe.addInput({debugName: key});
             let g = () => n.value;
             g[NODE] = n;
             Object.defineProperty( o, key, {
