@@ -3,6 +3,7 @@
 
 const {ComputeNode, InputNode, NODE} = require('../');
 const {build, unwrap, input} = require('../tree');
+const {Universe} = require('../universe');
 
 beforeEach( () => {
     global.console = require('console');
@@ -10,7 +11,8 @@ beforeEach( () => {
 
 test('depvary', () =>
 {
-    var T = build();
+    const U = new Universe();
+    var T = U.defineTree();
     
     T.i1 = input;
     T.i2 = input;
@@ -66,7 +68,8 @@ test('depvary', () =>
 
 test('rebuild', () =>
 {
-    var T = build();
+    const U = new Universe();
+    var T = U.defineTree();
         
     T.i = input;
     T.j = input;
@@ -85,7 +88,8 @@ test('rebuild', () =>
         this.j = newJ;
     }
     
-    T = build(T);
+    //T = build(T);
+    T = U.defineTree(T);
     T.z = t => t.j - t.i;
     T = unwrap(T);
     
@@ -97,18 +101,23 @@ test('rebuild', () =>
 
 test('nest', () =>
 {
+    const U = new Universe();
+
     var t = {};
     t.s = {};
 
-    t.i = new InputNode({});
+    //t.i = new InputNode({universe});
+    t.i = U.addInput({});
     t.i.debugName = 't.i';
 
-    t.s.x = new ComputeNode({
+    //t.s.x = new ComputeNode({
+    t.s.x = U.addCompute({
         func: () => 222,
         debugName: 't.s.x'
     });
 
-    t.c = new ComputeNode({
+    //t.c = new ComputeNode({
+    t.c = U.addCompute({
         bind: [t],
         func: t => t.s.x + t.i,
         debugName: 'c'
@@ -123,19 +132,24 @@ test('nest', () =>
 
 test('assign_other', () =>
 {
-    var ei = new InputNode({debugName:'ei'});
+    const U = new Universe();
+    //var ei = new InputNode({debugName:'ei'});
+    var ei = U.addInput({debugName:'ei'});
     ei.value = 10;
     
-    var ec = new ComputeNode({
+    //var ec = new ComputeNode({
+    var ec = U.addCompute({
         bind: [ei],
         func: ei => 222 + ei,
         debugName: 'ec'
     });
 
-    var ET = build();
+    //var ET = build();
+    var ET = U.defineTree();
     ET.d = () => 300;
 
-    var T = build();
+    //var T = build();
+    var T = U.defineTree();
     
     T.ei = ei;
     T.ec = ec;
@@ -151,19 +165,24 @@ test('assign_other', () =>
 
 test('node_back_ref', () =>
 {
-    var ei = new InputNode({debugName:'ei'});
+    const U = new Universe();
+    //var ei = new InputNode({debugName:'ei'});
+    var ei = U.addInput({debugName:'ei'});
     ei.value = 10;
     
-    var ec = new ComputeNode({
+    //var ec = new ComputeNode({
+    var ec = U.addCompute({
         bind: [ei],
         func: ei => 222 + ei,
         debugName: 'ec'
     });
 
-    var ET = build();
+    //var ET = build();
+    var ET = U.defineTree();
     ET.d = () => 300;
 
-    var T = build();
+    //var T = build();
+    var T = U.defineTree();
     
     T.i = input;
     T.ei = ei;

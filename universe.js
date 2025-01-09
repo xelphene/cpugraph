@@ -1,7 +1,6 @@
 
 'use strict';
 
-const {BuildProxy} = require('./tree/build');
 const {unwrap} = require('./tree/unwrap');
 const {InputNode} = require('./node/input');
 const {ComputeNode} = require('./node/compute');
@@ -28,6 +27,8 @@ class Universe {
     get constraints () { return this._cc }
     
     defineTree(root, opts) {
+        const {BuildProxy} = require('./tree/build');
+        
         if( opts===undefined )
             opts = {};
         else if( Array.isArray(opts) )

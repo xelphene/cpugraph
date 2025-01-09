@@ -7,10 +7,13 @@ const {nodeOf, hasNode} = require('../node/util.js');
 const {Node} = require('../node/node');
 const {ComputeNode} = require('../node/compute');
 const {InputNode} = require('../node/input');
+const {Universe} = require('../universe');
 
 class BuildProxy
 {
     constructor( universe, bindings ) {
+        if( ! (universe instanceof Universe) )
+            throw new Error(`Universe instance required`);
         this._universe = universe;
         this._bindings = bindings;
     }
