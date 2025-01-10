@@ -19,6 +19,8 @@ const nodeValueProxyHandler = {
                 else
                     return node.rawValue.hasOwnProperty(p);
             }
+        if( typeof(node.rawValue)!=='object' )
+            throw new Error(`Node ${node.debugName} rawValue has type ${typeof(node.rawValue)}; object (i.e. NodeValue) expected.`);
         return Reflect.get(node.rawValue, key);
     },
     set: (node, key, value) => {

@@ -8,8 +8,8 @@ const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
 
 class ComputeNode extends Node {
-    constructor({func, bind, bindThis, debugName}) {
-        super({debugName});
+    constructor({universe, func, bind, bindThis, debugName}) {
+        super({universe, debugName});
         if( typeof(func) != 'function' )
             throw new TypeError(`function required for func`);
         this._computeFunc = func;

@@ -3,15 +3,12 @@
 
 const {NODE, nodeOf} = require('../');
 const {build, unwrap, input} = require('../tree');
+const {Universe} = require('../universe');
 
 function main ()
 {
-    //var o = {};
-    //o.prop = 'asdf';
-    //var T = build(o);
-    
-    var T = build();
-        
+    const U = new Universe();
+    var T = U.defineTree();
     T.i = input;
     T.j = input;
     T.c = t => t.i + t.j;
@@ -20,15 +17,6 @@ function main ()
     
     T.i = 10;
     T.j = 20;
-    
-    T.setIJ = function (newI, newJ) {
-        this.i = newI;
-        this.j = newJ;
-    }
-    
-    T = build(T);
-    T.z = t => t.j - t.i;
-    T = unwrap(T);
     
     console.log( 0+T.c );
     console.log( 0+T.d );
@@ -45,11 +33,6 @@ function main ()
     console.log( nodeOf(T.c).debugName );
     
     console.log(T);
-    
-    console.log('--- setIJ ---');
-    T.setIJ(1,2);
-    console.log( 0+T.c );
-    console.log( 0+T.z );
 }
 
 if( require.main === module )
