@@ -6,7 +6,7 @@ const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
-const {mixinChannel} = require('../channel');
+const {mixinChannelBi} = require('../channel');
 
 class ComputeNode extends Node {
     constructor({universe, func, bind, bindThis, debugName}) {
@@ -77,6 +77,7 @@ class ComputeNode extends Node {
     */
     
     depStateChanged (node) {
+        this.log(`heard my dep ${node} state changed`);
         this._fresh = false;
         //this._saySpoiled();
         this._say('valueSpoiled');
@@ -149,5 +150,5 @@ class ComputeNode extends Node {
         return getNodeValueProxy( this );
     }
 }
-mixinChannel(ComputeNode);
+mixinChannelBi(ComputeNode);
 exports.ComputeNode = ComputeNode;

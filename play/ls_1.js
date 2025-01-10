@@ -28,20 +28,16 @@ function main ()
     
     T.j = 200;
     console.log( 0+T.c );
-    
     //console.log( T );
     console.log( nodeOf(T.c).debugName );
-    
     console.log(T);
     
     console.log('--- change input t.i');
     
-    T.j = 500;
+    T.i = 500;
     console.log( 0+T.c );
-    
     //console.log( T );
     console.log( nodeOf(T.c).debugName );
-    
     console.log(T);
     
     console.log('===============');
