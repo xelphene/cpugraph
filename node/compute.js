@@ -6,10 +6,14 @@ const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
+const {mixinChannel} = require('../channel');
 
 class ComputeNode extends Node {
     constructor({universe, func, bind, bindThis, debugName}) {
         super({universe, debugName});
+        
+        this._initChannel(['valueSpoiled']);
+        
         if( typeof(func) != 'function' )
             throw new TypeError(`function required for func`);
         this._computeFunc = func;
@@ -27,7 +31,7 @@ class ComputeNode extends Node {
             this._bindThis=bindThis;
         this._dependsOn = new Set();
         
-        this._spoilListeners = new Set();
+        //this._spoilListeners = new Set();
         
         this._computeCount = 0;
         this._value = null;
@@ -49,6 +53,7 @@ class ComputeNode extends Node {
         this.log(`heard I depend on ${otherNode.debugName}`);
         this._dependsOn.add(otherNode);
         
+        /*
         const cb = changedNode => {
             if( cb.rv )
                 this.depStateChanged();
@@ -57,25 +62,33 @@ class ComputeNode extends Node {
         cb.rv = true;
             
         otherNode.onStateChange( cb );
-        this._dependsOn.add( cb );
+        */
+        
+        this._listenTo(otherNode, 'stateChanged', this.depStateChanged);
+        //otherNode.addListener('stateChanged', this,
     }
     
+    /*
     _unlisten () {
         for( let l of this._dependsOn )
             l.rv = false;
         this._dependsOn = new Set();
     }
+    */
     
     depStateChanged (node) {
         this._fresh = false;
-        this._saySpoiled();
+        //this._saySpoiled();
+        this._say('valueSpoiled');
     }
     
+    /*
     _saySpoiled () {
         for( let l of this._spoilListeners )
             if( l(this) === false )
                 this._spoilListeners.delete(l);
     }
+    */
 
     get depsDebugNames () {
         return [...this._dependsOn].map( n => n.debugName );
@@ -109,7 +122,7 @@ class ComputeNode extends Node {
         this._value = null;
         this._fresh = false;
         // TODO: staticDeps option for optimization
-        this._unlisten();
+        this._unlistenAll();
         let [thisArg, args] = this._getArgs();
         //this.log(`call with ${args}`);
         let v = this._computeFunc.apply(thisArg, args);
@@ -136,4 +149,5 @@ class ComputeNode extends Node {
         return getNodeValueProxy( this );
     }
 }
+mixinChannel(ComputeNode);
 exports.ComputeNode = ComputeNode;

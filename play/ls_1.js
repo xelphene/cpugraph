@@ -33,6 +33,27 @@ function main ()
     console.log( nodeOf(T.c).debugName );
     
     console.log(T);
+    
+    console.log('--- change input t.i');
+    
+    T.j = 500;
+    console.log( 0+T.c );
+    
+    //console.log( T );
+    console.log( nodeOf(T.c).debugName );
+    
+    console.log(T);
+    
+    console.log('===============');
+
+    //console.log(`c hearingFrom:`);
+    //console.log( [...nodeOf( T.c )._hearingFrom].map( cb => cb.name) );
+
+    nodeOf(T.c)._chanDump();
+    nodeOf(T.d)._chanDump();
+    nodeOf(T.i)._chanDump();
+    nodeOf(T.j)._chanDump();
+    //console.log( [...nodeOf( T.i )._speakingTo] );
 }
 
 if( require.main === module )

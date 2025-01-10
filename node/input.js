@@ -5,11 +5,13 @@ const {NODE} = require('../consts');
 const {NodeValue} = require('./util');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
+const {mixinChannel} = require('../channel');
 
 class InputNode extends Node {
     constructor({universe, debugName, value}) {
         super({universe, debugName});
-        this._valueChangeListeners = new Set();
+        //this._valueChangeListeners = new Set();
+        this._initChannel(['valueChanged', 'stateChanged']);
         if( value!==undefined )
             this.value = value;
     }
@@ -20,7 +22,9 @@ class InputNode extends Node {
         
         this._value = v;
         
-        this._sayValueChanged();
+        //this._sayValueChanged();
+        this._say('valueChanged');
+        this._say('stateChanged');
     }
     
     get rawValue () {
@@ -33,6 +37,7 @@ class InputNode extends Node {
     
     get settable () { return true }
     
+    /*
     _sayValueChanged() {
         for( let l of this._valueChangeListeners ) {
             if( l(this) === false )
@@ -45,5 +50,7 @@ class InputNode extends Node {
     }
     
     onStateChange (f) { this.onValueChange(f) }
+    */
 }
+mixinChannel(InputNode);
 exports.InputNode = InputNode;
