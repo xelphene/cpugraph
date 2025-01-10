@@ -27,6 +27,8 @@ class ComputeNode extends Node {
             this._bindThis=bindThis;
         this._dependsOn = new Set();
         
+        this._spoilListeners = new Set();
+        
         this._computeCount = 0;
         this._value = null;
         this._fresh = false;
@@ -46,22 +48,35 @@ class ComputeNode extends Node {
     dependOn(otherNode) {
         this.log(`heard I depend on ${otherNode.debugName}`);
         this._dependsOn.add(otherNode);
-        this.listenTo(otherNode);
+        
+        const cb = changedNode => {
+            if( cb.rv )
+                this.depStateChanged();
+            return cb.rv
+        }
+        cb.rv = true;
+            
+        otherNode.onStateChange( cb );
+        this._dependsOn.add( cb );
     }
     
-    // called exclusively from Channel when another ComputeNode whose value
-    // we depend on spoiled
-    hearSpoiled(speakingNode) {
-        this._fresh = false;
-        this.saySpoiled();
-    }
-    // called exclusively from Channel when another InputNode whose value we
-    // depend on was set to something new
-    hearChanged(speakingNode) {
-        this._fresh = false;
-        this.saySpoiled();
+    _unlisten () {
+        for( let l of this._dependsOn )
+            l.rv = false;
+        this._dependsOn = new Set();
     }
     
+    depStateChanged (node) {
+        this._fresh = false;
+        this._saySpoiled();
+    }
+    
+    _saySpoiled () {
+        for( let l of this._spoilListeners )
+            if( l(this) === false )
+                this._spoilListeners.delete(l);
+    }
+
     get depsDebugNames () {
         return [...this._dependsOn].map( n => n.debugName );
     }
@@ -94,7 +109,7 @@ class ComputeNode extends Node {
         this._value = null;
         this._fresh = false;
         // TODO: staticDeps option for optimization
-        this.unlistenAll();
+        this._unlisten();
         let [thisArg, args] = this._getArgs();
         //this.log(`call with ${args}`);
         let v = this._computeFunc.apply(thisArg, args);
