@@ -6,7 +6,7 @@ const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
-const {mixinChannelBi} = require('../channel');
+const {mixinBlabFull} = require('../blab');
 
 class ComputeNode extends Node {
     constructor({universe, func, bind, bindThis, debugName}) {
@@ -157,5 +157,5 @@ class ComputeNode extends Node {
         return getNodeValueProxy( this );
     }
 }
-mixinChannelBi(ComputeNode, ['ValueSpoiled','ValueChanged']);
+mixinBlabFull(ComputeNode, ['ValueSpoiled','ValueChanged']);
 exports.ComputeNode = ComputeNode;

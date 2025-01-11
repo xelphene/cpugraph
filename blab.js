@@ -1,12 +1,12 @@
 
 'use strict';
 
-const LISTENER_MIXIN_CALLBACK = Symbol('LISTENER_MIXIN_CALLBACK');
-const CHANNEL_MIXIN_LISTENER = Symbol('CHANNEL_MIXIN_LISTENER');
-const CHANNEL_MIXIN_SPEAKER = Symbol('CHANNEL_MIXIN_SPEAKER');
+const BLAB_LISTENER_CALLBACK = Symbol('BLAB_LISTENER_CALLBACK');
+const BLAB_LISTENER = Symbol('BLAB_LISTENER');
+const BLAB_SPEAKER = Symbol('BLAB_SPEAKER');
 
 function isLMCallback(callback) {
-    return callback.hasOwnProperty(LISTENER_MIXIN_CALLBACK)
+    return callback.hasOwnProperty(BLAB_LISTENER_CALLBACK)
 }
 
 function describeCallback( callback ) {
@@ -17,7 +17,7 @@ function describeCallback( callback ) {
     }
 }
 
-class SpeakerMixin {
+class BlabSpeakerMixin {
     _initSpeaker () {
         this._speakingTo = new Map();
         for( let eventType of this._eventTypes )
@@ -61,7 +61,7 @@ class SpeakerMixin {
     says (eventType) { return this._eventTypes.has(eventType) }
 }
 
-class ListenerMixin {
+class BlabListenerMixin {
     _initListener () {
         this._hearingFrom = new Set();
     }
@@ -89,7 +89,7 @@ class ListenerMixin {
             return cb.alive;
         }
         cb.alive = true;
-        cb[LISTENER_MIXIN_CALLBACK] = true;
+        cb[BLAB_LISTENER_CALLBACK] = true;
 
         cb.speaker = other;
         cb.listener = this;
@@ -110,17 +110,17 @@ class ListenerMixin {
 
 class ChannelMixin {
     _initChannel () {
-        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_LISTENER) )
+        if( this.constructor.prototype.hasOwnProperty(BLAB_LISTENER) )
             this._initListener();
-        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_SPEAKER) )
+        if( this.constructor.prototype.hasOwnProperty(BLAB_SPEAKER) )
             this._initSpeaker();
     }
     
     _chanDump () {
         console.log(`chanDump for ${this.debugName}`);
-        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_LISTENER) )
+        if( this.constructor.prototype.hasOwnProperty(BLAB_LISTENER) )
             this._dumpListener();
-        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_SPEAKER) )
+        if( this.constructor.prototype.hasOwnProperty(BLAB_SPEAKER) )
             this._dumpSpeaker();
     }
 }
@@ -139,7 +139,7 @@ function mergeMixinClass(mixinClass, cls)
 }
 
 function applySpeak(cls, eventTypes) {
-    mergeMixinClass(SpeakerMixin, cls);
+    mergeMixinClass(BlabSpeakerMixin, cls);
 
     eventTypes = new Set(eventTypes);
     for( let eventType of eventTypes ) {
@@ -158,15 +158,15 @@ function applySpeak(cls, eventTypes) {
         value: eventTypes
     })
     
-    Object.defineProperty(cls.prototype, CHANNEL_MIXIN_SPEAKER, {
+    Object.defineProperty(cls.prototype, BLAB_SPEAKER, {
         value: true,
         enumerable: false
     });
 }
 
 function applyListen(cls) {
-    mergeMixinClass(ListenerMixin, cls);
-    Object.defineProperty(cls.prototype, CHANNEL_MIXIN_LISTENER, {
+    mergeMixinClass(BlabListenerMixin, cls);
+    Object.defineProperty(cls.prototype, BLAB_LISTENER, {
         value: true,
         enumerable: false
     });
@@ -176,14 +176,17 @@ function applyCommon(cls) {
     mergeMixinClass(ChannelMixin, cls);
 }
 
-exports.mixinChannelSpeak = (cls, eventTypes) => 
-{
+////// public API ////////////////////////////////////
+
+function mixinBlabSpeak (cls, eventTypes) {
     applySpeak(cls, eventTypes);
     applyCommon(cls, eventTypes);
 }
+exports.mixinBlabSpeak = mixinBlabSpeak;
 
-exports.mixinChannelBi = (cls, eventTypes) => {
+function mixinBlabFull (cls, eventTypes) {
     applySpeak(cls, eventTypes);
     applyListen(cls);
     applyCommon(cls);
 }
+exports.mixinBlabFull = mixinBlabFull;

@@ -5,7 +5,7 @@ const {NODE} = require('../consts');
 const {NodeValue} = require('./util');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
-const {mixinChannelSpeak} = require('../channel');
+const {mixinBlabSpeak} = require('../blab');
 
 class InputNode extends Node {
     constructor({universe, debugName, value}) {
@@ -51,5 +51,5 @@ class InputNode extends Node {
     onStateChange (f) { this.onValueChange(f) }
     */
 }
-mixinChannelSpeak(InputNode,['ValueChanged']);
+mixinBlabSpeak(InputNode,['ValueChanged']);
 exports.InputNode = InputNode;
