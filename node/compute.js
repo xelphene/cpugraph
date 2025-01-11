@@ -88,6 +88,11 @@ class ComputeNode extends Node {
         this._say('ValueSpoiled');
     }
     
+    spoil () {
+        this._fresh = false;
+        this._sayValueSpoiled();
+    }
+
     /*
     _saySpoiled () {
         for( let l of this._spoilListeners )
@@ -155,6 +160,7 @@ class ComputeNode extends Node {
         //    this.compute();
         return getNodeValueProxy( this );
     }
+    
 }
 mixinBlabFull(ComputeNode, ['ValueSpoiled','ValueChanged']);
 exports.ComputeNode = ComputeNode;
