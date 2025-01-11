@@ -6,17 +6,20 @@ const {nodeOf, isNode, hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
+const {mixinBlabFull} = require('../blab');
 
 class StretchNode extends Node {
     constructor({maxNode, debugName}) {
         super({debugName});
+        this._initChannel();
 
         if( maxNode!==undefined ) {
             if( ! isNode(maxNode) )
                 throw new Error(`Node instance or undefined required for maxNode argument`);
             maxNode = nodeOf(maxNode);
             this._maxNode = maxNode;
-            this.listenTo(maxNode);
+            
+            this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
         } else
             this._maxNode = null;
         
@@ -36,17 +39,13 @@ class StretchNode extends Node {
             throw new Error(`Node instance required for maxNode argument`);
         maxNode = nodeOf(maxNode);
         this._maxNode = maxNode;
-        this.listenTo(maxNode);
+        //this.listenTo(maxNode);
+
+        this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
     }
 
-    // called exclusively from Channel when our maxNode changed
-    hearSpoiled(speakingNode) {
-        this.saySpoiled();
-    }
-
-    // called exclusively from Channel when our maxNode changed
-    hearChanged(speakingNode) {
-        this.saySpoiled();
+    depStateChanged(node) {
+        this._sayValueSpoiled();
     }
     
     set value (v) {
@@ -56,8 +55,7 @@ class StretchNode extends Node {
         if( this._maxNode!==null && v > this._maxNode.rawValue )
             throw new Error(`Out of bounds value ${v}: max is ${this._maxNode.rawValue}`);
         this._value = new NodeValue(this, v);
-        this.sayChanged();
-        
+        this._sayValueChanged();
     }
     
     get rawValue () {
@@ -75,4 +73,5 @@ class StretchNode extends Node {
     }
 
 }
+mixinBlabFull(StretchNode, ['ValueSpoiled','ValueChanged']);
 exports.StretchNode = StretchNode;
