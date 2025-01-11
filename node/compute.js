@@ -5,7 +5,7 @@ const {NODE, DEBUG} = require('../consts');
 const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
-const {getNodeValueProxy} = require('./nvp');
+const {getNodeValueProxy, getValueProxy} = require('./nvp');
 const {mixinBlabFull} = require('../blab');
 
 class ComputeNode extends Node {
@@ -158,7 +158,10 @@ class ComputeNode extends Node {
     get value () {
         //if( ! this._fresh )
         //    this.compute();
-        return getNodeValueProxy( this );
+        if( this._computeCount==0 )
+            return getNodeValueProxy( this );
+        else
+            return getValueProxy( this, this.rawValue );
     }
     
 }

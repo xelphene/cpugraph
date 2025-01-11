@@ -4,7 +4,7 @@
 const {NODE} = require('../consts');
 const {NodeValue} = require('./util');
 const {Node} = require('./node');
-const {getNodeValueProxy} = require('./nvp');
+const {getNodeValueProxy, getValueProxy} = require('./nvp');
 const {mixinBlabSpeak} = require('../blab');
 
 class InputNode extends Node {
@@ -31,7 +31,11 @@ class InputNode extends Node {
     }
     
     get value () {
-        return getNodeValueProxy(this);
+        //return getNodeValueProxy(this);
+        if( typeof(this._value) != 'object' )
+            return getValueProxy( this, new NodeValue(this._value) );
+        else
+            return getValueProxy( this, this._value );
     }
     
     get settable () { return true }

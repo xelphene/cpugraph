@@ -74,3 +74,28 @@ function getNodeValueProxy(node) {
     return new Proxy(node, nodeValueProxyHandler);
 };
 exports.getNodeValueProxy = getNodeValueProxy;
+
+
+function getValueProxyHandler (node) {
+    return {
+        get: (nodeValue, key) => {
+            //console.log(`VP GET ${key.toString()}`);
+            if( key===NODE )
+                return node;
+            if( key=='hasOwnProperty' )
+                return p => {
+                    //console.log(`hawOwnProperty ${p.toString()}`);
+                    if( p===NODE )
+                        return node;
+                    else
+                        return nodeValue.hasOwnProperty(p)
+                }
+            return Reflect.get(nodeValue, key);
+        }
+    }
+};
+
+function getValueProxy(node, value) {
+    return new Proxy(value, getValueProxyHandler(node) );
+};
+exports.getValueProxy = getValueProxy;
