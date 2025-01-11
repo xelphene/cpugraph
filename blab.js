@@ -29,6 +29,16 @@ class BlabSpeakerMixin {
             throw new Error(`${this.constructor.name} has no eventType named ${eventType}`);
         this._speakingTo.get(eventType).add(callback);
     }
+
+    onAnyOf(eventTypes, callback) {
+        for( let eventType of eventTypes ) {
+            if( this.says(eventType) ) {
+                this.speakTo(eventType, callback)
+                return
+            }
+        }
+        throw new Error(`onAnyOf: speaker ${this.debugName} says none of ${eventTypes}`);
+    }
     
     stopSpeakingTo (eventType, callback) {
         if( ! this._eventTypes.has(eventType) )
@@ -109,6 +119,7 @@ class BlabListenerMixin {
         }
         throw new Error(`_listenToForAny: speaker ${other.debugName} says none of ${eventTypes}`);
     }
+    
     
     _dumpListener () {
         console.log(`  hearingFrom:`);
