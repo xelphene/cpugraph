@@ -100,11 +100,28 @@ class BlabListenerMixin {
         this._hearingFrom.add(cb);
     }
     
+    _listenToForAny (other, eventTypes, method) {
+        for( let eventType of eventTypes ) {
+            if( other.says(eventType) ) {
+                this._listenTo(other, eventType, method)
+                return
+            }
+        }
+        throw new Error(`_listenToForAny: speaker ${other.debugName} says none of ${eventTypes}`);
+    }
+    
     _dumpListener () {
         console.log(`  hearingFrom:`);
         for( let callback of this._hearingFrom )
-            //console.log(`    ${callback.name} ${callback.alive}`);
             console.log(`    ${describeCallback(callback)}`)
+    }
+    
+    get hearingFromNodes () {
+        return [...this._hearingFrom].map(
+            cb => isLMCallback(cb) ? cb.speaker : null
+        ).filter(
+            cb => cb !== null
+        )
     }
 }
 
@@ -131,10 +148,30 @@ function mergeMixinClass(mixinClass, cls)
     {
         if( propName=='constructor' )
             continue;
-        //console.log(`MIXIN: ${mixinClass.name}.${propName} -> ${cls.name}`);
-        if( propName in cls.prototype )
-            throw new Error(`class ${cls.name} already has a property named ${propName}`);
-        cls.prototype[propName] = mixinClass.prototype[propName];
+        
+        const propDesc = Object.getOwnPropertyDescriptor(mixinClass.prototype, propName);
+        
+        if( 'value' in propDesc && typeof(propDesc.value)=='function' ) {
+            //console.log(`MIXIN: method: ${mixinClass.name}.${propName} -> ${cls.name}`);
+            if( propName in cls.prototype )
+                throw new Error(`class ${cls.name} already has a property named ${propName}`);
+            Object.defineProperty(cls.prototype, propName, {
+                value: propDesc.value,
+                writable: propDesc.writable,
+                enumerable: propDesc.enumerable,
+                configurable: propDesc.configurable
+            })
+        } else if( 'get' in propDesc && typeof(propDesc.get)=='function' ) {
+            //console.log(`MIXIN: getter: ${mixinClass.name}.${propName} -> ${cls.name}`);
+            if( propName in cls.prototype )
+                throw new Error(`class ${cls.name} already has a property named ${propName}`);
+            Object.defineProperty(cls.prototype, propName, {
+                get: propDesc.get,
+                enumerable: propDesc.enumerable,
+                configurable: propDesc.configurable
+            })
+        } else
+            throw new Error(`mixin class ${mixinClass.name} has unknown property ${propName} of type ${typeof(mixinClass.prototype[propName])}`);
     }
 }
 
@@ -149,8 +186,13 @@ function applySpeak(cls, eventTypes) {
             }
         })
         Object.defineProperty(cls.prototype, 'says'+eventType, {
-            get: function () {
+            value: function () {
                 return this.says(eventType)
+            }
+        })
+        Object.defineProperty(cls.prototype, '_say'+eventType, {
+            value: function () {
+                return this._say(eventType);
             }
         })
     }

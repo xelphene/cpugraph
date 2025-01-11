@@ -13,6 +13,7 @@ function main ()
     T.j = input;
     T.c = t => t.i + t.j;
     T.d = t => t.i * 2;
+    T.e = t => t.d + t.j;
     T = unwrap(T);
     
     T.i = 10;
@@ -30,15 +31,14 @@ function main ()
     console.log( 0+T.c );
     //console.log( T );
     console.log( nodeOf(T.c).debugName );
-    console.log(T);
     
     console.log('--- change input t.i');
     
     T.i = 500;
     console.log( 0+T.c );
+    console.log( 0+T.e );
     //console.log( T );
     console.log( nodeOf(T.c).debugName );
-    console.log(T);
     
     console.log('===============');
 
@@ -67,10 +67,15 @@ function main ()
         return true
             
     }
-    //console.log( nodeOf(T.d).saysValueSpoiled );
+    console.log( `T.d.saysValueSpoiled? ${nodeOf(T.d).saysValueSpoiled}` );
     nodeOf(T.i).onValueChanged( cb );
+    nodeOf(T.c).onValueChanged( cb );
     nodeOf(T.i)._chanDump();
     T.i = 50;
+
+    console.log('/// wtf')
+    console.log( nodeOf(T.c).hearingFromNodes );    
+    console.log('/// wtf')
 
     T.i = 101;
 
