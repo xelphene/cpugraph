@@ -62,6 +62,11 @@ class Universe {
         return new Proxy(root, bp);
     }
     
+    defineNewTree(opts) {
+        const T = this.defineTree(null, opts);
+        return [unwrap(T), T];
+    }
+    
     defineObj() {
         if( arguments.length==1 ) {
             if( typeof(arguments[0]) != 'function' )
