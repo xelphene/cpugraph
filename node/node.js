@@ -11,7 +11,7 @@ class Node {
         if( debugName!==undefined )
             this._debugName = debugName;
         else
-            this._debugName = this.construtor.name;
+            this._debugName = this.constructor.name;
     }
     
     get universe ()   { return this._universe }

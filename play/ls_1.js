@@ -50,6 +50,33 @@ function main ()
     nodeOf(T.i)._chanDump();
     nodeOf(T.j)._chanDump();
     //console.log( [...nodeOf( T.i )._speakingTo] );
+
+    console.log( nodeOf(T.j).saysValueChanged );
+    console.log( nodeOf(T.j).saysValueSpoiled );
+    console.log( nodeOf(T.d).saysValueChanged );
+    console.log( nodeOf(T.d).saysValueSpoiled );
+
+    console.log('/');
+    
+    function cb (node) {
+        console.log(`called back! node=${node.debugName} value=${node.value}`)
+        if( node.value > 100 ) {
+            console.log(`  unlisten`);
+            return false;
+        }
+        return true
+            
+    }
+    //console.log( nodeOf(T.d).saysValueSpoiled );
+    nodeOf(T.i).onValueChanged( cb );
+    nodeOf(T.i)._chanDump();
+    T.i = 50;
+
+    T.i = 101;
+
+    T.i = 102;
+    nodeOf(T.i)._chanDump();
+    
 }
 
 if( require.main === module )

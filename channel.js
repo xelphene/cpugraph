@@ -1,12 +1,27 @@
 
 'use strict';
 
+const LISTENER_MIXIN_CALLBACK = Symbol('LISTENER_MIXIN_CALLBACK');
+const CHANNEL_MIXIN_LISTENER = Symbol('CHANNEL_MIXIN_LISTENER');
+const CHANNEL_MIXIN_SPEAKER = Symbol('CHANNEL_MIXIN_SPEAKER');
+
+function isLMCallback(callback) {
+    return callback.hasOwnProperty(LISTENER_MIXIN_CALLBACK)
+}
+
+function describeCallback( callback ) {
+    if( isLMCallback(callback) )
+        return `LM callback ${callback.eventType} @ ${callback.speaker.debugName} -> ${callback.listener.debugName}.${callback.method.name} alive=${callback.alive}`;
+    else {
+        return `generic callback ${JSON.stringify(callback.toString())}`
+    }
+}
+
 class SpeakerMixin {
     _initSpeaker () {
         this._speakingTo = new Map();
         for( let eventType of this._eventTypes )
             this._speakingTo.set(eventType, new Set())
-
     }
     
     speakTo (eventType, callback) {
@@ -27,7 +42,7 @@ class SpeakerMixin {
         if( ! this._speakingTo.has(eventType) )
             throw new Error(`${this.constructor.name} has no eventType named ${eventType}`);
         for( let callback of this._speakingTo.get(eventType) ) {
-            const rv = callback();
+            const rv = callback(this);
             if( rv === false ) {
                 //console.log(`CHAN: CB ${callback.name} returned false`);
                 const didDel = this._speakingTo.get(eventType).delete(callback)
@@ -39,11 +54,11 @@ class SpeakerMixin {
         console.log(`  speakingTo:`);
         for( let eventType of this._eventTypes ) {
             for( let callback of this._speakingTo.get(eventType) )
-                // TODO: speaker should not assume callback has an 'alive' prop
-                // create an independent describeCallback func to produce this string
-                console.log(`    ${callback.name} ${callback.alive}`);
+                console.log(`    ${describeCallback(callback)}`)
         }
     }
+    
+    says (eventType) { return this._eventTypes.has(eventType) }
 }
 
 class ListenerMixin {
@@ -54,7 +69,8 @@ class ListenerMixin {
     _unlistenAll () {
         for( let callback of this._hearingFrom ) {
             //console.log(`CHAN: _unlistenAll 1: ${callback.alive} :: ${callback.name}`)
-            callback.alive = false;
+            if( isLMCallback(callback) )
+                callback.alive = false;
             //console.log(`CHAN: _unlistenAll 2: ${callback.alive} :: ${callback.name}`)
             this._hearingFrom.delete(callback);
             //callback.speaker.stopSpeakingTo(callback.eventType, callback);
@@ -73,16 +89,10 @@ class ListenerMixin {
             return cb.alive;
         }
         cb.alive = true;
+        cb[LISTENER_MIXIN_CALLBACK] = true;
 
-        const describe = () => `callback ${other.debugName} ${eventType} ${this.debugName}`;
-        Object.defineProperty(cb, 'name', {
-            //value: `callback ${other.constructor.name} ${eventType} ${this.constructor.name}`
-            value: describe()
-        });
-
-        //cb.name = 'CBNAME';
         cb.speaker = other;
-        cb.receiver = this;
+        cb.listener = this;
         cb.eventType = eventType;
         cb.method = method;
         
@@ -93,32 +103,29 @@ class ListenerMixin {
     _dumpListener () {
         console.log(`  hearingFrom:`);
         for( let callback of this._hearingFrom )
-            console.log(`    ${callback.name} ${callback.alive}`);
+            //console.log(`    ${callback.name} ${callback.alive}`);
+            console.log(`    ${describeCallback(callback)}`)
     }
 }
 
 class ChannelMixin {
-    _initChannel (eventTypes) {
-        this._eventTypes = new Set(eventTypes);
-        
-        // TODO
-        if( '_initListener' in this.constructor.prototype )
+    _initChannel () {
+        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_LISTENER) )
             this._initListener();
-        if( '_initSpeaker' in this.constructor.prototype )
+        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_SPEAKER) )
             this._initSpeaker();
     }
     
     _chanDump () {
         console.log(`chanDump for ${this.debugName}`);
-        // TODO
-        if( '_initListener' in this.constructor.prototype )
+        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_LISTENER) )
             this._dumpListener();
-        if( '_initSpeaker' in this.constructor.prototype )
+        if( this.constructor.prototype.hasOwnProperty(CHANNEL_MIXIN_SPEAKER) )
             this._dumpSpeaker();
     }
 }
 
-function applyMixin(mixinClass, cls, eventTypes) 
+function mergeMixinClass(mixinClass, cls) 
 {
     for( let propName of Object.getOwnPropertyNames(mixinClass.prototype) )
     {
@@ -131,13 +138,52 @@ function applyMixin(mixinClass, cls, eventTypes)
     }
 }
 
-exports.mixinChannelSpeak = (cls, eventTypes) => {
-    applyMixin(SpeakerMixin, cls, eventTypes);
-    applyMixin(ChannelMixin, cls, eventTypes);
+function applySpeak(cls, eventTypes) {
+    mergeMixinClass(SpeakerMixin, cls);
+
+    eventTypes = new Set(eventTypes);
+    for( let eventType of eventTypes ) {
+        Object.defineProperty(cls.prototype, 'on'+eventType, {
+            get: callback => function (callback) {
+                this.speakTo(eventType, callback)
+            }
+        })
+        Object.defineProperty(cls.prototype, 'says'+eventType, {
+            get: function () {
+                return this.says(eventType)
+            }
+        })
+    }
+    Object.defineProperty(cls.prototype, '_eventTypes', {
+        value: eventTypes
+    })
+    
+    Object.defineProperty(cls.prototype, CHANNEL_MIXIN_SPEAKER, {
+        value: true,
+        enumerable: false
+    });
+}
+
+function applyListen(cls) {
+    mergeMixinClass(ListenerMixin, cls);
+    Object.defineProperty(cls.prototype, CHANNEL_MIXIN_LISTENER, {
+        value: true,
+        enumerable: false
+    });
+}
+
+function applyCommon(cls) {
+    mergeMixinClass(ChannelMixin, cls);
+}
+
+exports.mixinChannelSpeak = (cls, eventTypes) => 
+{
+    applySpeak(cls, eventTypes);
+    applyCommon(cls, eventTypes);
 }
 
 exports.mixinChannelBi = (cls, eventTypes) => {
-    applyMixin(SpeakerMixin, cls, eventTypes);
-    applyMixin(ListenerMixin, cls, eventTypes);
-    applyMixin(ChannelMixin, cls, eventTypes);
+    applySpeak(cls, eventTypes);
+    applyListen(cls);
+    applyCommon(cls);
 }

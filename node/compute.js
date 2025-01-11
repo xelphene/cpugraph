@@ -12,7 +12,8 @@ class ComputeNode extends Node {
     constructor({universe, func, bind, bindThis, debugName}) {
         super({universe, debugName});
         
-        this._initChannel(['valueSpoiled']);
+        console.log( this._eventTypes );
+        this._initChannel();
         
         if( typeof(func) != 'function' )
             throw new TypeError(`function required for func`);
@@ -64,8 +65,13 @@ class ComputeNode extends Node {
         otherNode.onStateChange( cb );
         */
         
-        this._listenTo(otherNode, 'stateChanged', this.depStateChanged);
-        //otherNode.addListener('stateChanged', this,
+        //this._listenTo(otherNode, 'stateChanged', this.depStateChanged);
+        if( otherNode.says('ValueSpoiled') )
+            this._listenTo(otherNode, 'ValueSpoiled', this.depStateChanged);
+        else if( otherNode.says('ValueChanged') )
+            this._listenTo(otherNode, 'ValueChanged', this.depStateChanged);
+        else
+            throw new Error(`Node ${otherNode} says neither ValueSpoiled nor ValueChanged`);
     }
     
     /*
@@ -80,7 +86,7 @@ class ComputeNode extends Node {
         this.log(`heard my dep ${node} state changed`);
         this._fresh = false;
         //this._saySpoiled();
-        this._say('valueSpoiled');
+        this._say('ValueSpoiled');
     }
     
     /*
@@ -135,6 +141,7 @@ class ComputeNode extends Node {
         this._computeCount++;
         this._value = v;
         this._fresh = true;
+        this._say('ValueChanged');
     }
 
     // should *only* be called from nodeValueProxyHandler
@@ -150,5 +157,5 @@ class ComputeNode extends Node {
         return getNodeValueProxy( this );
     }
 }
-mixinChannelBi(ComputeNode);
+mixinChannelBi(ComputeNode, ['ValueSpoiled','ValueChanged']);
 exports.ComputeNode = ComputeNode;

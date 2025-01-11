@@ -11,7 +11,7 @@ class InputNode extends Node {
     constructor({universe, debugName, value}) {
         super({universe, debugName});
         //this._valueChangeListeners = new Set();
-        this._initChannel(['valueChanged', 'stateChanged']);
+        this._initChannel();
         if( value!==undefined )
             this.value = value;
     }
@@ -23,8 +23,7 @@ class InputNode extends Node {
         this._value = v;
         
         //this._sayValueChanged();
-        this._say('valueChanged');
-        this._say('stateChanged');
+        this._say('ValueChanged');
     }
     
     get rawValue () {
@@ -52,5 +51,5 @@ class InputNode extends Node {
     onStateChange (f) { this.onValueChange(f) }
     */
 }
-mixinChannelSpeak(InputNode);
+mixinChannelSpeak(InputNode,['ValueChanged']);
 exports.InputNode = InputNode;
