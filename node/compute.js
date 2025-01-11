@@ -12,7 +12,6 @@ class ComputeNode extends Node {
     constructor({universe, func, bind, bindThis, debugName}) {
         super({universe, debugName});
         
-        console.log( this._eventTypes );
         this._initChannel();
         
         if( typeof(func) != 'function' )
