@@ -197,7 +197,10 @@ function applySpeak(cls, eventTypes) {
             }
         })
         Object.defineProperty(cls.prototype, 'says'+eventType, {
-            value: function () {
+            //value: function () {
+            //    return this.says(eventType)
+            //}
+            get: function () {
                 return this.says(eventType)
             }
         })
@@ -243,3 +246,9 @@ function mixinBlabFull (cls, eventTypes) {
     applyCommon(cls);
 }
 exports.mixinBlabFull = mixinBlabFull;
+
+function mixinBlabListen (cls) {
+    applyListen(cls);
+    applyCommon(cls);    
+}
+exports.mixinBlabListen = mixinBlabListen;
