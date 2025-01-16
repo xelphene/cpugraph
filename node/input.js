@@ -13,7 +13,7 @@ class InputNode extends Node {
         //this._valueChangeListeners = new Set();
         this._initChannel();
         if( value!==undefined )
-            this.value = value;
+            this._value = value;
     }
     
     set value (v) {
