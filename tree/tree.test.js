@@ -36,9 +36,9 @@ test('depvary', () =>
 
     expect( 0 + T.c ).toBe( 2 );
     
-    expect( T.c[NODE].hearingFromNodes ).toContain( T.i1[NODE] );
-    expect( T.c[NODE].hearingFromNodes ).toContain( T.mode[NODE] );
-    expect( T.c[NODE].hearingFromNodes ).not.toContain( T.i2[NODE] );
+    expect( T.c[NODE].hearingFromObjects ).toContain( T.i1[NODE].handle );
+    expect( T.c[NODE].hearingFromObjects ).toContain( T.mode[NODE].handle );
+    expect( T.c[NODE].hearingFromObjects ).not.toContain( T.i2[NODE].handle );
     expect( T.c[NODE].fresh ).toBe( true );
     expect( T.c[NODE].computeCount ).toBe( 1 );
 
@@ -48,9 +48,9 @@ test('depvary', () =>
     expect( T.c[NODE].fresh ).toBe( true );
     expect( 0 + T.c ).toBe( 2 );
     expect( T.c[NODE].computeCount ).toBe( 1 );
-    expect( T.c[NODE].hearingFromNodes ).toContain( T.i1[NODE] );
-    expect( T.c[NODE].hearingFromNodes ).toContain( T.mode[NODE] );
-    expect( T.c[NODE].hearingFromNodes ).not.toContain( T.i2[NODE] );
+    expect( T.c[NODE].hearingFromObjects ).toContain( T.i1[NODE].handle );
+    expect( T.c[NODE].hearingFromObjects ).toContain( T.mode[NODE].handle );
+    expect( T.c[NODE].hearingFromObjects ).not.toContain( T.i2[NODE].handle );
     
     T.mode = 'add';
     T.i2 = 100;
@@ -60,9 +60,9 @@ test('depvary', () =>
     expect( T.c[NODE].fresh ).toBe( true );
     expect( T.c[NODE].computeCount ).toBe( 2 );
 
-    expect( T.c[NODE].hearingFromNodes ).toContain( T.i1[NODE] );
-    expect( T.c[NODE].hearingFromNodes ).toContain( T.mode[NODE] );
-    expect( T.c[NODE].hearingFromNodes ).toContain( T.i2[NODE] );
+    expect( T.c[NODE].hearingFromObjects ).toContain( T.i1[NODE].handle );
+    expect( T.c[NODE].hearingFromObjects ).toContain( T.mode[NODE].handle );
+    expect( T.c[NODE].hearingFromObjects ).toContain( T.i2[NODE].handle );
     
 });
 
@@ -126,8 +126,8 @@ test('nest', () =>
     t.i.value = 0.1;
     
     expect( 0+t.c.value ).toBe( 222.1 );
-    expect( t.c.hearingFromNodes ).toContain( t.s.x );
-    expect( t.c.hearingFromNodes ).toContain( t.i );
+    expect( t.c.hearingFromObjects ).toContain( t.s.x.handle );
+    expect( t.c.hearingFromObjects ).toContain( t.i.handle );
 });
 
 test('assign_other', () =>

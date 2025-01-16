@@ -6,7 +6,7 @@ const {hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy, getValueProxy} = require('./nvp');
-const {mixinBlabFull} = require('../blab');
+const {mixinBlabListen} = require('../blab');
 
 class ComputeNode extends Node {
     constructor({universe, func, bind, bindThis, debugName}) {
@@ -48,61 +48,33 @@ class ComputeNode extends Node {
             console.log(`${this.debugName}: ${msg}`);
     }
     
-    // only called from DTProxyHandler and ComputeNode.compute()
+    //called from DTProxyHandler and this class only
     dependOn(otherNode) {
         this.log(`heard I depend on ${otherNode.debugName}`);
-        this._dependsOn.add(otherNode);
+        //this._dependsOn.add(otherNode);
         
-        /*
-        const cb = changedNode => {
-            if( cb.rv )
-                this.depStateChanged();
-            return cb.rv
-        }
-        cb.rv = true;
-            
-        otherNode.onStateChange( cb );
-        */
+        const otherHandle = otherNode.handle;
+
+        this._dependsOn.add(otherHandle);
         
-        //this._listenTo(otherNode, 'stateChanged', this.depStateChanged);
-        if( otherNode.says('ValueSpoiled') )
-            this._listenTo(otherNode, 'ValueSpoiled', this.depStateChanged);
-        else if( otherNode.says('ValueChanged') )
-            this._listenTo(otherNode, 'ValueChanged', this.depStateChanged);
-        else
-            throw new Error(`Node ${otherNode} says neither ValueSpoiled nor ValueChanged`);
+        this._listenToForAny(otherHandle, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
     }
-    
-    /*
-    _unlisten () {
-        for( let l of this._dependsOn )
-            l.rv = false;
-        this._dependsOn = new Set();
-    }
-    */
     
     depStateChanged (node) {
-        this.log(`heard my dep ${node} state changed`);
+        this.log(`heard my dep changed`);
         this._fresh = false;
-        //this._saySpoiled();
-        this._say('ValueSpoiled');
+        //this._say('ValueSpoiled');
+        this._tellHandlesSpoiled();
     }
     
     spoil () {
         this._fresh = false;
-        this._sayValueSpoiled();
+        //this._sayValueSpoiled();
+        this._tellHandlesSpoiled();
     }
-
-    /*
-    _saySpoiled () {
-        for( let l of this._spoilListeners )
-            if( l(this) === false )
-                this._spoilListeners.delete(l);
-    }
-    */
 
     get depsDebugNames () {
-        return [...this._dependsOn].map( n => n.debugName );
+        return [...this._dependsOn].map( h => h.node.debugName );
     }
     
     _getArgs() {
@@ -132,8 +104,11 @@ class ComputeNode extends Node {
         this.log(`recomputing`);
         this._value = null;
         this._fresh = false;
+        
         // TODO: staticDeps option for optimization
         this._unlistenAll();
+        this._dependsOn = new Set();
+        
         let [thisArg, args] = this._getArgs();
         //this.log(`call with ${args}`);
         let v = this._computeFunc.apply(thisArg, args);
@@ -145,7 +120,8 @@ class ComputeNode extends Node {
         this._computeCount++;
         this._value = v;
         this._fresh = true;
-        this._say('ValueChanged');
+        //this._say('ValueChanged');
+        this._tellHandlesChanged();
     }
 
     // should *only* be called from nodeValueProxyHandler
@@ -165,5 +141,5 @@ class ComputeNode extends Node {
     }
     
 }
-mixinBlabFull(ComputeNode, ['ValueSpoiled','ValueChanged']);
+mixinBlabListen(ComputeNode);
 exports.ComputeNode = ComputeNode;

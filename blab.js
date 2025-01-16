@@ -127,7 +127,7 @@ class BlabListenerMixin {
             console.log(`    ${describeCallback(callback)}`)
     }
     
-    get hearingFromNodes () {
+    get hearingFromObjects () {
         return [...this._hearingFrom].map(
             cb => isLMCallback(cb) ? cb.speaker : null
         ).filter(

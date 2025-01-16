@@ -39,9 +39,9 @@ test('depvary', () =>
     expect( i1.debugName ).toBe( 'i1' );
     expect( t.i2.debugName ).toBe( 'i2' );
     expect( 0 + t.c.value ).toBe( 2 );
-    expect( t.c.hearingFromNodes ).toContain( i1 );
-    expect( t.c.hearingFromNodes ).toContain( t.mode );
-    expect( t.c.hearingFromNodes ).not.toContain( t.i2 );
+    expect( t.c.hearingFromObjects ).toContain( i1.handle );
+    expect( t.c.hearingFromObjects ).toContain( t.mode.handle );
+    expect( t.c.hearingFromObjects ).not.toContain( t.i2.handle );
     expect( t.c.fresh ).toBe( true );
     expect( t.c.computeCount ).toBe( 1 );
 
@@ -51,9 +51,9 @@ test('depvary', () =>
     expect( t.c.fresh ).toBe( true );
     expect( 0 + t.c.value ).toBe( 2 );
     expect( t.c.computeCount ).toBe( 1 );
-    expect( t.c.hearingFromNodes ).toContain( i1 );
-    expect( t.c.hearingFromNodes ).toContain( t.mode );
-    expect( t.c.hearingFromNodes ).not.toContain( t.i2 );
+    expect( t.c.hearingFromObjects ).toContain( i1.handle );
+    expect( t.c.hearingFromObjects ).toContain( t.mode.handle );
+    expect( t.c.hearingFromObjects ).not.toContain( t.i2.handle );
     
     //console.log(`changing inputs...`);
     t.mode.value = 'add';
@@ -64,9 +64,9 @@ test('depvary', () =>
     expect( t.c.fresh ).toBe( true );
     expect( t.c.computeCount ).toBe( 2 );
 
-    expect( t.c.hearingFromNodes ).toContain( i1 );
-    expect( t.c.hearingFromNodes ).toContain( t.mode );
-    expect( t.c.hearingFromNodes ).toContain( t.i2 );
+    expect( t.c.hearingFromObjects ).toContain( i1.handle );
+    expect( t.c.hearingFromObjects ).toContain( t.mode.handle );
+    expect( t.c.hearingFromObjects ).toContain( t.i2.handle );
 });
 
 test('nest', () =>
@@ -91,8 +91,8 @@ test('nest', () =>
     t.i.value = 0.1;
     
     expect( 0+t.c.value ).toBe( 222.1 );
-    expect( t.c.hearingFromNodes ).toContain( t.s.x );
-    expect( t.c.hearingFromNodes ).toContain( t.i );
+    expect( t.c.hearingFromObjects ).toContain( t.s.x.handle );
+    expect( t.c.hearingFromObjects ).toContain( t.i.handle );
 });
 
 test('stretch', () =>
@@ -105,14 +105,14 @@ test('stretch', () =>
         func: t => t.i + 10
     });
     t.s = new StretchNode({
-        maxNode: t.m
+        max: t.m
     });
 
     t.i.value = 5;
     t.s.value = 12;
 
-    expect( 0+t.s.value ).toBe( 12 );
-    t.i.value = 1;
+    expect( 0+t.s.value ).toBe( 12 ); // max = 15
+    t.i.value = 1;                    // max = 11
     expect( 0+t.s.value ).toBe( 11 );
     t.i.value = 6;
     expect( 0+t.s.value ).toBe( 12 );

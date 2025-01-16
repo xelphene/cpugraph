@@ -2,26 +2,29 @@
 'use strict';
 
 const {NODE, DEBUG} = require('../consts');
-const {nodeOf, isNode, hasNode, NodeValue} = require('./util');
+const {nodeOf, isNode, hasNode, NodeValue, isHandle, handleOf} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
-const {mixinBlabFull} = require('../blab');
+const {mixinBlabListen} = require('../blab');
 
 class StretchNode extends Node {
-    constructor({maxNode, debugName}) {
+    constructor({max, debugName}) {
         super({debugName});
         this._initChannel();
 
-        if( maxNode!==undefined ) {
-            if( ! isNode(maxNode) )
-                throw new Error(`Node instance or undefined required for maxNode argument`);
-            maxNode = nodeOf(maxNode);
-            this._maxNode = maxNode;
+        if( max!==undefined ) {
+            if( isNode(max) )
+                this._maxHandle = max.handle;
+            else if( isHandle(max) )
+                this._maxHandle = max
+            else
+                throw new Error(`Node or NodeHandle instance or undefined required for max argument`);
+            this._maxHandle = handleOf(max);
             
-            this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
+            this._listenToForAny(this._maxHandle, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
         } else
-            this._maxNode = null;
+            this._maxHandle = null;
         
         this._value = null;
         this._computeCount = 0;
@@ -31,41 +34,48 @@ class StretchNode extends Node {
     get fresh () { return true }
     get computeCount () { return this._computeCount }
 
-    get maxNode () { return this._maxNode }
+    get maxHandle () { return this._maxHandle }
+    get maxNode   () { return this._maxHandle.node }
     set maxNode (maxNode) {
-        if( this._maxNode !== null )
+        if( this._maxHandle !== null )
             throw new Error(`maxNode already set`);
         if( ! isNode(maxNode) )
             throw new Error(`Node instance required for maxNode argument`);
-        maxNode = nodeOf(maxNode);
-        this._maxNode = maxNode;
+        this._maxHandle = maxNode.handle;
+        
         //this.listenTo(maxNode);
 
-        this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
+        this._listenToForAny(this._maxHandle, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
     }
 
     depStateChanged(node) {
-        this._sayValueSpoiled();
+        //this._sayValueSpoiled();
+        this._tellHandlesSpoiled();
     }
     
     set value (v) {
         if( typeof(v) !== 'number' )
             throw new TypeError('number type required for StrechNode assigned value');
         
-        if( this._maxNode!==null && v > this._maxNode.rawValue )
-            throw new Error(`Out of bounds value ${v}: max is ${this._maxNode.rawValue}`);
+        if( this._maxHandle!==null && v > this._maxHandle.rawValue )
+            throw new Error(`Out of bounds value ${v}: max is ${this._maxHandle.rawValue}`);
         this._value = new NodeValue(this, v);
-        this._sayValueChanged();
+        //this._sayValueChanged();
+        this._tellHandlesChanged();
     }
     
     get rawValue () {
         if( this._value===null )
             throw new Error(`Cannot compute the value of a StrechNode before it has been assigned a value.`);
-        
-        if( this._maxNode!==null && this._value <= this._maxNode.rawValue )
+
+        if( this._maxHandle===null ) {
             return this._value;
-        else
-            return this._maxNode.rawValue;
+        } else {
+            if( this._value <= this._maxHandle.rawValue )
+                return this._value
+            else
+                return this._maxHandle.rawValue;
+        }
     }
     
     get value () {
@@ -73,5 +83,5 @@ class StretchNode extends Node {
     }
 
 }
-mixinBlabFull(StretchNode, ['ValueSpoiled','ValueChanged']);
+mixinBlabListen(StretchNode);
 exports.StretchNode = StretchNode;

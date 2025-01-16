@@ -3,6 +3,7 @@
 
 exports.NODE = require('./consts').NODE;
 exports.nodeOf = require('./node/util').nodeOf;
+exports.handleOf = require('./node/util').handleOf;
 exports.hasNode = require('./node/util').hasNode;
 exports.isNode = require('./node/util').isNode;
 

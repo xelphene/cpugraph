@@ -42,45 +42,37 @@ function main ()
     
     console.log('===============');
 
-    //console.log(`c hearingFrom:`);
-    //console.log( [...nodeOf( T.c )._hearingFrom].map( cb => cb.name) );
+    //nodeOf(T.c)._chanDump();
+    //nodeOf(T.d)._chanDump();
+    //nodeOf(T.i)._chanDump();
+    //nodeOf(T.j)._chanDump();
 
-    nodeOf(T.c)._chanDump();
-    nodeOf(T.d)._chanDump();
-    nodeOf(T.i)._chanDump();
-    nodeOf(T.j)._chanDump();
-    //console.log( [...nodeOf( T.i )._speakingTo] );
-
-    console.log( nodeOf(T.j).saysValueChanged );
-    console.log( nodeOf(T.j).saysValueSpoiled );
-    console.log( nodeOf(T.d).saysValueChanged );
-    console.log( nodeOf(T.d).saysValueSpoiled );
+    //console.log( nodeOf(T.j).saysValueChanged );
+    //console.log( nodeOf(T.j).saysValueSpoiled );
+    //console.log( nodeOf(T.d).saysValueChanged );
+    //console.log( nodeOf(T.d).saysValueSpoiled );
 
     console.log('/');
     
-    function cb (node) {
-        console.log(`called back! node=${node.debugName} value=${node.value}`)
-        if( node.value > 100 ) {
+    function cb (handle) {
+        console.log(`called back! handle=${handle.debugName} value=${handle.value}`)
+        if( handle.value > 100 ) {
             console.log(`  unlisten`);
             return false;
         }
         return true
             
     }
-    console.log( `T.d.saysValueSpoiled? ${nodeOf(T.d).saysValueSpoiled}` );
-    nodeOf(T.i).onValueChanged( cb );
-    nodeOf(T.c).onValueChanged( cb );
-    nodeOf(T.i)._chanDump();
+    console.log( `T.d.saysValueSpoiled? ${nodeOf(T.d).handle.saysValueSpoiled}` );
+    nodeOf(T.i).handle.onValueChanged( cb );
+    nodeOf(T.c).handle.onValueChanged( cb );
+    nodeOf(T.i).handle._chanDump();
     T.i = 50;
-
-    console.log('/// wtf')
-    console.log( nodeOf(T.c).hearingFromNodes );    
-    console.log('/// wtf')
 
     T.i = 101;
 
     T.i = 102;
-    nodeOf(T.i)._chanDump();
+    nodeOf(T.i).handle._chanDump();
     
 }
 
