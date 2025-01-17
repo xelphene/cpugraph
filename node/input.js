@@ -22,8 +22,8 @@ class InputNode extends Node {
         
         this._value = v;
         
-        //this._sayValueChanged();
-        this._say('ValueChanged');
+        //this._sayNewValue();
+        this._sayNewValue();
     }
     
     get rawValue () {
@@ -39,21 +39,6 @@ class InputNode extends Node {
     }
     
     get settable () { return true }
-    
-    /*
-    _sayValueChanged() {
-        for( let l of this._valueChangeListeners ) {
-            if( l(this) === false )
-                this._valueChangeListeners.delete(l);
-        }
-    }
-    
-    onValueChange (f) {
-        this._valueChangeListeners.add(f)
-    }
-    
-    onStateChange (f) { this.onValueChange(f) }
-    */
 }
-mixinBlabSpeak(InputNode,['ValueChanged']);
+mixinBlabSpeak(InputNode,['NewValue']);
 exports.InputNode = InputNode;

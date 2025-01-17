@@ -53,53 +53,22 @@ class ComputeNode extends Node {
         this.log(`heard I depend on ${otherNode.debugName}`);
         this._dependsOn.add(otherNode);
         
-        /*
-        const cb = changedNode => {
-            if( cb.rv )
-                this.depStateChanged();
-            return cb.rv
-        }
-        cb.rv = true;
-            
-        otherNode.onStateChange( cb );
-        */
-        
-        //this._listenTo(otherNode, 'stateChanged', this.depStateChanged);
-        if( otherNode.says('ValueSpoiled') )
-            this._listenTo(otherNode, 'ValueSpoiled', this.depStateChanged);
-        else if( otherNode.says('ValueChanged') )
-            this._listenTo(otherNode, 'ValueChanged', this.depStateChanged);
-        else
-            throw new Error(`Node ${otherNode} says neither ValueSpoiled nor ValueChanged`);
+        //otherNode.onNewValue( () => this.depStateChanged() );
+        otherNode.speakToMethod( 'NewValue', this, this.depStateChanged );
     }
-    
-    /*
-    _unlisten () {
-        for( let l of this._dependsOn )
-            l.rv = false;
-        this._dependsOn = new Set();
-    }
-    */
     
     depStateChanged (node) {
         this.log(`heard my dep ${node} state changed`);
         this._fresh = false;
-        //this._saySpoiled();
-        this._say('ValueSpoiled');
+        this._sayNewValue();
     }
+    
+    get deps () { return this._dependsOn }
     
     spoil () {
         this._fresh = false;
-        this._sayValueSpoiled();
+        this._sayNewValue();
     }
-
-    /*
-    _saySpoiled () {
-        for( let l of this._spoilListeners )
-            if( l(this) === false )
-                this._spoilListeners.delete(l);
-    }
-    */
 
     get depsDebugNames () {
         return [...this._dependsOn].map( n => n.debugName );
@@ -145,7 +114,6 @@ class ComputeNode extends Node {
         this._computeCount++;
         this._value = v;
         this._fresh = true;
-        this._say('ValueChanged');
     }
 
     // should *only* be called from nodeValueProxyHandler
@@ -165,5 +133,5 @@ class ComputeNode extends Node {
     }
     
 }
-mixinBlabFull(ComputeNode, ['ValueSpoiled','ValueChanged']);
+mixinBlabFull(ComputeNode, ['NewValue']);
 exports.ComputeNode = ComputeNode;

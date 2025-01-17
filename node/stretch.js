@@ -19,7 +19,9 @@ class StretchNode extends Node {
             maxNode = nodeOf(maxNode);
             this._maxNode = maxNode;
             
-            this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
+            //this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
+            //maxNode.onNewValue( () => this.depStateChanged() );
+            maxNode.speakToMethod( 'NewValue', this, this.depStateChanged );
         } else
             this._maxNode = null;
         
@@ -41,11 +43,13 @@ class StretchNode extends Node {
         this._maxNode = maxNode;
         //this.listenTo(maxNode);
 
-        this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
+        //this._listenToForAny(maxNode, ['ValueChanged','ValueSpoiled'], this.depStateChanged);
+        //maxNode.onNewValue( () => this.depStateChanged() );
+        maxNode.speakToMethod( 'NewValue', this, this.depStateChanged );
     }
 
     depStateChanged(node) {
-        this._sayValueSpoiled();
+        this._sayNewValue();
     }
     
     set value (v) {
@@ -55,7 +59,7 @@ class StretchNode extends Node {
         if( this._maxNode!==null && v > this._maxNode.rawValue )
             throw new Error(`Out of bounds value ${v}: max is ${this._maxNode.rawValue}`);
         this._value = new NodeValue(this, v);
-        this._sayValueChanged();
+        this._sayNewValue();
     }
     
     get rawValue () {
@@ -73,5 +77,5 @@ class StretchNode extends Node {
     }
 
 }
-mixinBlabFull(StretchNode, ['ValueSpoiled','ValueChanged']);
+mixinBlabFull(StretchNode, ['NewValue']);
 exports.StretchNode = StretchNode;
