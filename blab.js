@@ -22,12 +22,22 @@ class BlabSpeakerMixin {
         this._speakingTo = new Map();
         for( let eventType of this._eventTypes )
             this._speakingTo.set(eventType, new Set())
+
+        this._speakingToMethods = new Map();
+        for( let eventType of this._eventTypes )
+            this._speakingToMethods.set(eventType, []);
     }
     
     speakTo (eventType, callback) {
         if( ! this._eventTypes.has(eventType) )
             throw new Error(`${this.constructor.name} has no eventType named ${eventType}`);
         this._speakingTo.get(eventType).add(callback);
+    }
+    
+    speakToMethod( eventType, object, method ) {
+        if( ! this._eventTypes.has(eventType) )
+            throw new Error(`${this.constructor.name} has no eventType named ${eventType}`);        
+        this._speakingToMethods.get(eventType).push({object, method});
     }
 
     onAnyOf(eventTypes, callback) {
@@ -58,6 +68,9 @@ class BlabSpeakerMixin {
                 const didDel = this._speakingTo.get(eventType).delete(callback)
             }
         }
+        for( let om of this._speakingToMethods.get(eventType) ) {
+            om.method.apply(om.object, [this]);
+        }
     }
     
     _dumpSpeaker () {
@@ -65,6 +78,8 @@ class BlabSpeakerMixin {
         for( let eventType of this._eventTypes ) {
             for( let callback of this._speakingTo.get(eventType) )
                 console.log(`    ${describeCallback(callback)}`)
+            for( let om of this._speakingToMethods.get(eventType) )
+                console.log(`    ${om.object.constructor.name}.${om.method.name}`);
         }
     }
     
