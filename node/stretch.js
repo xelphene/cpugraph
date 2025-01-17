@@ -6,7 +6,7 @@ const {nodeOf, isNode, hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy} = require('./nvp');
-const {mixinBlabFull} = require('../blab');
+const {mixinBlabSpeak} = require('../blab');
 
 class StretchNode extends Node {
     constructor({maxNode, debugName}) {
@@ -77,5 +77,5 @@ class StretchNode extends Node {
     }
 
 }
-mixinBlabFull(StretchNode, ['NewValue']);
+mixinBlabSpeak(StretchNode, ['NewValue']);
 exports.StretchNode = StretchNode;
