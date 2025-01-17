@@ -97,12 +97,19 @@ class ComputeNode extends Node {
         return [thisArg, rv];
     }
     
+    _unlistenDeps () {
+        for( let dn in this._dependsOn ) {
+            dn.stopSpeakingToMethod( 'NewValue', this );
+            this._dependsOn.delete(dn);
+        }
+    }
+    
     compute() {
         this.log(`recomputing`);
         this._value = null;
         this._fresh = false;
         // TODO: staticDeps option for optimization
-        this._unlistenAll();
+        this._unlistenDeps();
         let [thisArg, args] = this._getArgs();
         //this.log(`call with ${args}`);
         let v = this._computeFunc.apply(thisArg, args);

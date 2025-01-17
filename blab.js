@@ -58,6 +58,19 @@ class BlabSpeakerMixin {
         this._speakingTo.get(eventType).delete(callback);
     }
     
+    stopSpeakingToMethod (eventType, object) {
+        if( ! this._eventTypes.has(eventType) )
+            throw new Error(`${this.constructor.name} has no eventType named ${eventType}`);        
+
+        const newList = [];
+        for( let om of this._speakingToMethods.get(eventType) )
+            if( om.object!==object )
+                newList.push(om)
+        if( newList.length == this._speakingToMethods.get(eventType).length )
+            throw new Error(`no method listeners for ${eventType} to ${object.construtor.name}`);
+        this._speakingToMethods.set(eventType, newList);
+    }
+    
     _say(eventType) {
         if( ! this._speakingTo.has(eventType) )
             throw new Error(`${this.constructor.name} has no eventType named ${eventType}`);
