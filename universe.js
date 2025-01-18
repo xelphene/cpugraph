@@ -4,12 +4,54 @@
 const {unwrap} = require('./tree/unwrap');
 const {InputNode} = require('./node/input');
 const {ComputeNode} = require('./node/compute');
-
+const {Mapper} = require('./mapper');
 
 class Universe {
     constructor() {
         this._nodes = new Set();
         this._cc = new ConstraintContainer(this)
+        
+        this._mappers = [];
+        this.map = {}
+    }
+    
+    registerMap(name, getMapper) {
+        const u = this;
+        this.map = function () {
+            getMapper.apply(null, [u].concat(arguments))
+        }
+    }
+    
+    getMapper(fwdMapFunc, revMapFunc, bindNodes) {
+        for( let m of this._mappers )
+            if( m.matches(fwdMapFunc, revMapFunc, bindNodes) )
+                return m;
+        const m = new Mapper({
+            universe: this._universe,
+                fwdMapFunc: fwdMapFunc,
+                revMapFunc: revMapFunc,
+                bind: bindNodes
+            })
+        this._mappers.push(m);
+        return m;
+    }
+    
+    mapFwd(fwdMapFunc, bindNodes) {
+        if( bindNodes===undefined )
+            bindNodes=[];
+        return this.getMapper(fwdMapFunc, null, bindNodes)
+    }
+
+    mapSplit(fwdMapFunc, revMapFunc, bindNodes) {
+        if( bindNodes===undefined )
+            bindNodes=[];
+        return this.getMapper(fwdMapFunc, revMapFunc, bindNodes)
+    }
+    
+    mapSym(mapFunc, bindNodes) {
+        if( bindNodes===undefined )
+            bindNodes=[];
+        return this.getMapper(mapFunc, mapFunc, bindNodes)
     }
     
     addCompute({bind, func, debugName}) {
