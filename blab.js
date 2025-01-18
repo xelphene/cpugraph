@@ -31,6 +31,8 @@ class BlabSpeakerMixin {
     speakTo (eventType, callback) {
         if( ! this._eventTypes.has(eventType) )
             throw new Error(`${this.constructor.name} has no eventType named ${eventType}`);
+        if( typeof(callback) != 'function' )
+            throw new Error(`function required for callback, not ${typeof(callback)}`);
         this._speakingTo.get(eventType).add(callback);
     }
     
