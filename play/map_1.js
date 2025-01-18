@@ -30,6 +30,14 @@ function main () {
     dx.value = 2;
 
     console.log( `dp: ${dp.value.x}, ${dp.value.y}` );    
+
+    console.log( dp.settable );
+    dp.value = {x:20, y:20};
+
+    console.log( `dp: ${dp.value.x}, ${dp.value.y}` );    
+    console.log( `dx: ${dx.value}  dy: ${dy.value}`);
+    console.log( `pt: ${pt.value.x}, ${pt.value.y}` );    
+    
 }
 
 if( require.main === module )

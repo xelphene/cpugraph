@@ -15,7 +15,7 @@ class MapNode extends Node {
         if( ! (srcNode instanceof Node) )
             throw new Error(`Node instance required for srcNode)`);
         this._srcNode = srcNode;
-        this._srcNode.speakTo( 'NewValue', this, this.srcNodeChanged );
+        this._srcNode.speakToMethod( 'NewValue', this, this.srcNodeChanged );
         
         this._mapper = mapper;
         this._computeCount = 0;
@@ -23,9 +23,9 @@ class MapNode extends Node {
         this._value = null;
     }
     
-    _srcNodeChanged () {
+    srcNodeChanged () {
         this._fresh = false;
-        this._sayValueSpoiled();
+        this._sayNewValue();
     }
     
     get mapping () { return this._mapping }
