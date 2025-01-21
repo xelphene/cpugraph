@@ -6,7 +6,9 @@ const {MapNode} = require('./node/map');
 
 class Mapper {
     constructor({ universe, fwdMapFunc, revMapFunc, bind }) {
-        
+        if( universe===undefined )
+            throw new Error(`universe was not provided to Mapper constructor`);
+                
         if( typeof(fwdMapFunc) != 'function' )
             throw new Error('function required for fwdMapFunc');
         this._fwdMapFunc = fwdMapFunc
@@ -27,7 +29,7 @@ class Mapper {
         for( let i=0; i<bind.length; i++ )
         {
             if( ! (bind[i] instanceof Node) )
-                throw new Error(`Node instance required for bind ${i}`);
+                throw new Error(`Node instance required for bind ${i}, not ${typeof(bind[i])}`);
             
             bind[i].onNewValue( () => this._bindNodeChanged() );
         }
