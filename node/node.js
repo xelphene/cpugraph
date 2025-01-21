@@ -6,8 +6,6 @@ const {Channel} = require('./channel');
 
 class Node {
     constructor ({universe, debugName}) {
-        if( universe===undefined )
-            throw new Error(`universe was not provided to Node constructor`);
         this._universe = universe;
 
         if( debugName!==undefined )
@@ -23,6 +21,8 @@ class Node {
     get [NODE] () { return this }
 
     get map () {
+        if( this._universe===undefined )
+            throw new Error(`Node was built without a Universe`);
         //console.log(this.universe);
         const mapSrcNode = this;
         const universe = this.universe;
