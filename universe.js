@@ -17,8 +17,8 @@ class Universe {
     
     registerMap(name, getMapper) {
         const u = this;
-        this.map = function () {
-            getMapper.apply(null, [u].concat(arguments))
+        this.map[name] = function () {
+            return getMapper.apply(null, [u].concat([...arguments]))
         }
     }
     
@@ -27,11 +27,11 @@ class Universe {
             if( m.matches(fwdMapFunc, revMapFunc, bindNodes) )
                 return m;
         const m = new Mapper({
-            universe: this._universe,
-                fwdMapFunc: fwdMapFunc,
-                revMapFunc: revMapFunc,
-                bind: bindNodes
-            })
+            universe: this,
+            fwdMapFunc: fwdMapFunc,
+            revMapFunc: revMapFunc,
+            bind: bindNodes
+        })
         this._mappers.push(m);
         return m;
     }
