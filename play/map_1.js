@@ -18,26 +18,51 @@ function main () {
     pt.value = {x:10, y:10};
     dx.value = 1;
     dy.value = 5;
+    var dx2 = U.addCompute({
+        bind: [dx],
+        func: dx => dx*10
+    });
+    var dy2 = U.addCompute({
+        bind: [dy],
+        func: dy => dy*10
+    });
     
     var dp = U.mapSplit(mapXlateFwd, mapXlateRev, [dx,dy]).mapNode( pt );
+    var dp2 = U.mapSplit(mapXlateFwd, mapXlateRev, [dx2,dy2]).mapNode( dp );
     
-    console.log( pt.value );
-    console.log( 0+dx.value );
-    console.log( 0+dy.value );
-    
+    console.log( `pt: ${pt.value.x},${pt.value.y}` );
+    console.log( `dx: ${0+dx.value} dy: ${0+dy.value}` );
     console.log( `dp: ${dp.value.x}, ${dp.value.y}` );    
+
+    console.log( `dx2: ${0+dx2.value} dy2: ${0+dy2.value}` );
+    console.log( `dp2: ${dp2.value.x}, ${dp2.value.y}` );    
     
+    console.log( '-- set dx=2');
     dx.value = 2;
 
+    console.log( `pt: ${pt.value.x}, ${pt.value.y}` );    
+    console.log( `dx: ${0+dx.value} dy: ${0+dy.value}` );
     console.log( `dp: ${dp.value.x}, ${dp.value.y}` );    
+    console.log( `dx2: ${0+dx2.value} dy2: ${0+dy2.value}` );
+    console.log( `dp2: ${dp2.value.x}, ${dp2.value.y}` );    
 
-    console.log( dp.settable );
+    console.log( '-- set dp = 20,20');
     dp.value = {x:20, y:20};
 
     console.log( `dp: ${dp.value.x}, ${dp.value.y}` );    
-    console.log( `dx: ${dx.value}  dy: ${dy.value}`);
+    console.log( `dx: ${0+dx.value} dy: ${0+dy.value}` );
     console.log( `pt: ${pt.value.x}, ${pt.value.y}` );    
+    console.log( `dx2: ${0+dx2.value} dy2: ${0+dy2.value}` );
+    console.log( `dp2: ${dp2.value.x}, ${dp2.value.y}` );    
     
+    console.log('=== dp2.mapValueToSrc(200,100) ===');
+    console.log( `dx: ${0+dx.value} dy: ${0+dy.value}` );
+    console.log( `dx2: ${0+dx2.value} dy2: ${0+dy2.value}` );
+    
+    console.log( dp2.mapValueToSrc( {x:200,y:100} ) )
+    console.log( dp2.mapValueToSrc( {x:200,y:100}, pt ) )
+    console.log( dp2.mapValueToSrc( {x:200,y:100}, dp ) )
+    console.log( dp2.mapValueToSrc( {x:200,y:100}, dp2 ) )
 }
 
 if( require.main === module )

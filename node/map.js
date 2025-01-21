@@ -28,7 +28,7 @@ class MapNode extends Node {
         this._sayNewValue();
     }
     
-    get mapping () { return this._mapping }
+    get mapper () { return this._mapper }
     
     mapperBindNodeChanged () {
         this._fresh = false;
@@ -65,6 +65,22 @@ class MapNode extends Node {
             return getNodeValueProxy( this );
         else
             return getValueProxy( this, this.rawValue );
+    }
+    
+    get srcNode () { return this._srcNode }
+    
+    // contextNode is optional.  if omitted, this will map to the context of
+    // the ultimate src node
+    mapValueToSrc (value, contextNode) {
+        if( contextNode===undefined || contextNode!==this ) {
+            if( this.srcNode instanceof MapNode ) {
+                return this.srcNode.mapValueToSrc(this.mapper.revMap(value), contextNode)
+            } else {
+                return this.mapper.revMap(value)
+            }
+        } else {
+            return value
+        }
     }
 }
 mixinBlabSpeak(MapNode,['NewValue']);
