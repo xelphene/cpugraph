@@ -28,7 +28,7 @@ function main () {
     });
     
     U.registerMap('xlate',
-        (u, dxNode, dyNode) => u.mapSplit(mapXlateFwd, mapXlateRev, [dxNode,dyNode])
+        (dxNode, dyNode) => U.mapSplit(mapXlateFwd, mapXlateRev, [dxNode,dyNode])
     )
     // TODO:
     // notice: no 'u' argument to the passed in func

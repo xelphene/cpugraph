@@ -18,7 +18,7 @@ class Universe {
     registerMap(name, getMapper) {
         const u = this;
         this.map[name] = function () {
-            return getMapper.apply(null, [u].concat([...arguments]))
+            return getMapper.apply(null, [...arguments]);
         }
     }
     
