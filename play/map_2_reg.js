@@ -27,19 +27,8 @@ function main () {
         func: dy => dy*10
     });
     
-    U.registerMap('xlate',
-        (dxNode, dyNode) => U.mapSplit(mapXlateFwd, mapXlateRev, [dxNode,dyNode])
-    )
-    // TODO:
-    // notice: no 'u' argument to the passed in func
-    /*
-    U.map.xlate = (dxNode, dyNode) => 
-        U.mapSplit(mapXlateFwd, mapXlateRev, [dxNode,dyNode])
-    */
+    U.registerMap('xlate', mapXlateFwd, mapXlateRev);
     
-    //var dp = U.mapSplit(mapXlateFwd, mapXlateRev, [dx,dy]).mapNode( pt );
-    //var dp2 = U.mapSplit(mapXlateFwd, mapXlateRev, [dx2,dy2]).mapNode( dp );
-
     //var dp  = U.map.xlate(dx , dy ).mapNode( pt );
     //var dp2 = U.map.xlate(dx2, dy2).mapNode( dp );
     

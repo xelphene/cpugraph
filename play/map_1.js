@@ -27,8 +27,8 @@ function main () {
         func: dy => dy*10
     });
     
-    var dp = U.mapSplit(mapXlateFwd, mapXlateRev, [dx,dy]).mapNode( pt );
-    var dp2 = U.mapSplit(mapXlateFwd, mapXlateRev, [dx2,dy2]).mapNode( dp );
+    var dp  = U.getMapper(mapXlateFwd, mapXlateRev, [dx,dy]).mapNode( pt );
+    var dp2 = U.getMapper(mapXlateFwd, mapXlateRev, [dx2,dy2]).mapNode( dp );
     
     console.log( `pt: ${pt.value.x},${pt.value.y}` );
     console.log( `dx: ${0+dx.value} dy: ${0+dy.value}` );

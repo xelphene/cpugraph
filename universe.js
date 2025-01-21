@@ -15,10 +15,10 @@ class Universe {
         this.map = {}
     }
     
-    registerMap(name, getMapper) {
+    registerMap(name, fwdMapFunc, revMapFunc) {
         const u = this;
         this.map[name] = function () {
-            return getMapper.apply(null, [...arguments]);
+            return u.getMapper(fwdMapFunc, revMapFunc, [...arguments]);
         }
     }
     
@@ -34,24 +34,6 @@ class Universe {
         })
         this._mappers.push(m);
         return m;
-    }
-    
-    mapFwd(fwdMapFunc, bindNodes) {
-        if( bindNodes===undefined )
-            bindNodes=[];
-        return this.getMapper(fwdMapFunc, null, bindNodes)
-    }
-
-    mapSplit(fwdMapFunc, revMapFunc, bindNodes) {
-        if( bindNodes===undefined )
-            bindNodes=[];
-        return this.getMapper(fwdMapFunc, revMapFunc, bindNodes)
-    }
-    
-    mapSym(mapFunc, bindNodes) {
-        if( bindNodes===undefined )
-            bindNodes=[];
-        return this.getMapper(mapFunc, mapFunc, bindNodes)
     }
     
     addCompute({bind, func, debugName}) {
