@@ -83,6 +83,16 @@ class Mapper {
         for( let mn of this._mapNodes )
             mn.mapperBindNodeChanged();
     }
+
+    hasMapForSrc( srcNode ) {
+        return this._srcNodeToMapNode.has(srcNode)
+    }
+    
+    existingMapNode( srcNode ) {
+        if( ! this._srcNodeToMapNode.has(srcNode) )
+            throw new Error(`No MapNode available with the given srcNode`);
+        return this._srcNodeToMapNode.get(srcNode)
+    }
     
     mapNode( srcNode ) {
         if( this._srcNodeToMapNode.has(srcNode) )
