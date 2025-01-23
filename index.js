@@ -10,6 +10,7 @@ exports.Node = require('./node/node').Node;
 exports.ComputeNode = require('./node/compute').ComputeNode;
 exports.InputNode = require('./node/input').InputNode;
 exports.StretchNode = require('./node/stretch').StretchNode;
+exports.DummyNode = require('./node/dummy').DummyNode;
 
 exports.input = require('./tree').input;
 
