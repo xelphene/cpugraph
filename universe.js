@@ -5,6 +5,7 @@ const {unwrap} = require('./tree/unwrap');
 const {InputNode} = require('./node/input');
 const {ComputeNode} = require('./node/compute');
 const {Mapper} = require('./mapper');
+const {createNodeObj, isNodeObj} = require('./tree/nodeobj');
 
 class Universe {
     constructor() {
@@ -59,11 +60,11 @@ class Universe {
             opts = {bind: opts};
 
         if( root===undefined || root===null )
-            root = {};
-        //else if( root instanceof PotentialNode )
-        //    root = root[pbExist]();
-        //else
-        //    root = unwrap(root);
+            //root = {};
+            root = createNodeObj(this);
+        else
+            if( ! isNodeObj(root) )
+                throw new Error(`root is not a NodeObj`);
 
         if( opts.bind===undefined )
             opts.bind = [root];
@@ -95,7 +96,7 @@ class Universe {
         if( arguments.length==1 ) {
             if( typeof(arguments[0]) != 'function' )
                 throw new TypeError(`function required for argument if 1 argument is provided`);
-            var obj = {};
+            var obj = null;
             var func = arguments[0];
             var opts = {};
         } else {

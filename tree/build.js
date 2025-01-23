@@ -1,13 +1,14 @@
 
 'use strict';
 
-const {ORIG, input, DEBUG} = require('./consts');
-const {NODE} = require('../consts.js');
-const {nodeOf, hasNode} = require('../node/util.js');
+const {ORIG, input, DEBUG, subobj} = require('./consts');
+const {NODE, NODEOBJ} = require('../consts.js');
+const {isNode, nodeOf, hasNode} = require('../node/util.js');
 const {Node} = require('../node/node');
 const {ComputeNode} = require('../node/compute');
 const {InputNode} = require('../node/input');
 const {Universe} = require('../universe');
+const {isNodeObj, isAsIs, createNodeObj} = require('./nodeobj');
 
 class BuildProxy
 {
@@ -24,6 +25,9 @@ class BuildProxy
     }
 
     get( o, key ) {
+        if( ! isNodeObj(o) )
+            throw new Error(`BuildProxy target is invalid`);
+        
         if( key===ORIG )
             return o;
         
@@ -31,6 +35,9 @@ class BuildProxy
         if( opd && opd.get && opd.get[NODE] )
             return opd.get[NODE];
         
+        if( isNodeObj(Reflect.get(o, key)) )
+            return new Proxy(o[key], new BuildProxy(this._universe, this._bindings) );
+                    
         return Reflect.get(o, key);
     }
     
@@ -75,6 +82,21 @@ class BuildProxy
             return true;
         }
         
+        if( v===subobj ) {
+            o[key] = createNodeObj();
+            return true;
+        }
+        
+        if( isAsIs(v) ) {
+            o[key] = v.value;
+            return true;
+        }
+        
+        if( isNodeObj(v) ) {
+            o[key] = v;
+            return true;
+        }
+                
         if( hasNode(v) ) {
             let g = () => nodeOf(v).value;
             g[NODE] = nodeOf(v);
@@ -94,6 +116,7 @@ class BuildProxy
             return true;
         }
 
+        // TODO: is this not redundant with if( hasNode(v) ) now?
         if( v instanceof Node ) {
             let g = () => v.value;
             g[NODE] = v;

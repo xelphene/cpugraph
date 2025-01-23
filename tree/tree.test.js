@@ -1,7 +1,7 @@
 
 'use strict';
 
-const {ComputeNode, InputNode, NODE} = require('../');
+const {createNodeObj, ComputeNode, InputNode, NODE} = require('../');
 const {build, unwrap, input} = require('../tree');
 const {Universe} = require('../universe');
 
@@ -103,8 +103,10 @@ test('nest', () =>
 {
     const U = new Universe();
 
-    var t = {};
-    t.s = {};
+    //var t = {};
+    //t.s = {};
+    var t = createNodeObj();
+    t.s = createNodeObj();
 
     //t.i = new InputNode({universe});
     t.i = U.addInput({});

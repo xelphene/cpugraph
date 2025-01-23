@@ -13,7 +13,12 @@ exports.StretchNode = require('./node/stretch').StretchNode;
 exports.DummyNode = require('./node/dummy').DummyNode;
 
 exports.input = require('./tree').input;
+exports.subobj = require('./tree').subobj;
 
 exports.tree = require('./tree');
+exports.asIs = require('./tree/nodeobj').asIs;
+exports.NODEOBJ = require('./consts').NODEOBJ;
+exports.createNodeObj = require('./tree/nodeobj').createNodeObj;
+exports.NodeObjAdjutant = require('./tree/nodeobj').NodeObjAdjutant;
 exports.universe = require('./universe');
 exports.Universe = exports.universe.Universe;

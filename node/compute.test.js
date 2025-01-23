@@ -1,7 +1,7 @@
 
 'use strict';
 
-const {ComputeNode, NODE} = require('../');
+const {createNodeObj, ComputeNode, NODE} = require('../');
 
 beforeEach( () => {
     global.console = require('console');
@@ -9,7 +9,8 @@ beforeEach( () => {
 
 test('basic', () => 
 {
-    var t = {};
+    //var t = {};
+    var t = createNodeObj();
 
     t.a = new ComputeNode({
         bind: [],

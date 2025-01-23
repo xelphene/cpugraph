@@ -1,6 +1,7 @@
 
 'use strict';
 
+const {createNodeObj} = require('../tree/nodeobj');
 const {ComputeNode} = require('./compute');
 const {InputNode} = require('./input');
 const {StretchNode} = require('./stretch');
@@ -11,7 +12,8 @@ beforeEach( () => {
 
 test('depvary', () =>
 {
-    var t = {};
+    //var t = {};
+    var t = createNodeObj();
     
     var i1 = new InputNode({debugName: 'i1'});
     
@@ -71,8 +73,10 @@ test('depvary', () =>
 
 test('nest', () =>
 {
-    var t = {};
-    t.s = {};
+    //var t = {};
+    //t.s = {};
+    var t = createNodeObj();
+    t.s = createNodeObj();
 
     t.i = new InputNode({});
     t.i.debugName = 't.i';
@@ -97,7 +101,8 @@ test('nest', () =>
 
 test('stretch', () =>
 {
-    const t = {};
+    //const t = {};
+    const t = createNodeObj();
     
     t.i = new InputNode({});
     t.m = new ComputeNode({

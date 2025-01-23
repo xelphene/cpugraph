@@ -2,11 +2,12 @@
 'use strict';
 
 const {NODE, DEBUG} = require('../consts');
-const {hasNode, NodeValue} = require('./util');
+const {isNode, hasNode, NodeValue} = require('./util');
 const {DTProxyHandler} = require('./dtproxy');
 const {Node} = require('./node');
 const {getNodeValueProxy, getValueProxy} = require('./nvp');
 const {mixinBlabSpeak} = require('../blab');
+const {isNodeObj} = require('../tree/nodeobj');
 
 class ComputeNode extends Node {
     constructor({universe, func, bind, bindThis, debugName}) {
@@ -21,8 +22,11 @@ class ComputeNode extends Node {
         if( bind===undefined )
             bind=[];
         for( let i=0; i<bind.length; i++ ) {
-            if( typeof( bind[i] ) != 'object' )
-                throw new TypeError(`object required for binding ${i}`);
+            if( ! isNode(bind[i]) && ! isNodeObj(bind[i]) ) {
+                throw new Error(`bind[${i}] is neither a Node nor a NodeObj`);
+            }
+            //if( typeof( bind[i] ) != 'object' )
+            //    throw new TypeError(`object required for binding ${i}`);
         }
         this._bindings = bind;
         if( bindThis===undefined )
