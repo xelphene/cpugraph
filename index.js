@@ -11,4 +11,8 @@ exports.ComputeNode = require('./node/compute').ComputeNode;
 exports.InputNode = require('./node/input').InputNode;
 exports.StretchNode = require('./node/stretch').StretchNode;
 
+exports.input = require('./tree').input;
+
 exports.tree = require('./tree');
+exports.universe = require('./universe');
+exports.Universe = exports.universe.Universe;
