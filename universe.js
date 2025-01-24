@@ -18,6 +18,10 @@ class Universe {
     }
     
     registerMap(name, fwdMapFunc, revMapFunc) {
+        // TODO: check for conflicting names
+        // if present, see if fwdMapFunc and revMapFunc are the same
+        //  and then ignore
+        // otherwise, throw Error
         const u = this;
         this.map[name] = function () {
             return u.getMapper(fwdMapFunc, revMapFunc, [...arguments]);
