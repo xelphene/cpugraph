@@ -62,7 +62,7 @@ class ComputeNode extends Node {
     }
     
     depStateChanged (node) {
-        this.log(`heard my dep ${node} state changed`);
+        this.log(`heard my dep ${node.debugName} state changed`);
         this._fresh = false;
         this._sayNewValue();
     }
@@ -109,7 +109,7 @@ class ComputeNode extends Node {
     }
     
     compute() {
-        this.log(`recomputing`);
+        this.log(`COMPUTE ${this.debugName} ${this._computeCount}`);
         this._value = null;
         this._fresh = false;
         // TODO: staticDeps option for optimization
@@ -135,8 +135,12 @@ class ComputeNode extends Node {
     }
         
     get value () {
-        //if( ! this._fresh )
-        //    this.compute();
+        // this returns a NodeValueProxy on the first compute so that
+        // some value with an associated Node (this Node) can be returned
+        // without actually invoking the compute func
+        // this allows more intuitive syntax to be used during tree
+        // construction, which is when the computeFunc could fail because
+        // not all of its deps exist yet.
         if( this._computeCount==0 )
             return getNodeValueProxy( this );
         else
