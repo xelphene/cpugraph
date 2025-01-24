@@ -4,6 +4,7 @@
 const {Node} = require('./node');
 const {hasNode, NODE, DEBUG, NODEOBJ} = require('../consts');
 const {isNodeObj} = require('../tree/nodeobj');
+const {NodeValue} = require('./util');
 
 class DTProxyHandler {
     constructor(listener) {
@@ -25,6 +26,9 @@ class DTProxyHandler {
             //console.log(`DTProxy: get ${key.toString()} has Node`);
             this.log(`get ${key.toString()} has Node`);
             this._listener.dependOn( v[NODE] );
+            //return v;
+            if( v instanceof NodeValue )
+                v = v.value;
             return v;
         } else if( v instanceof Node ) {
             this.log(`get ${key.toString()} is Node`);
