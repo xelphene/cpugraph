@@ -6,6 +6,7 @@ const {InputNode} = require('./node/input');
 const {ComputeNode} = require('./node/compute');
 const {Mapper} = require('./mapper');
 const {createNodeObj, isNodeObj} = require('./tree/nodeobj');
+const {BuildFactory} = require('./tree/buildfactory');
 
 class Universe {
     constructor() {
@@ -51,7 +52,7 @@ class Universe {
     
     get constraints () { return this._cc }
     
-    defineTree(root, opts) {
+    makeBuildProxy(root, opts) {
         const {BuildProxy} = require('./tree/build');
         
         if( opts===undefined )
@@ -69,27 +70,20 @@ class Universe {
         if( opts.bind===undefined )
             opts.bind = [root];
         else {
-            //opts.bind = opts.bind.map(unwrap);
-            //for( let i=0; i<opts.bind.length; i++ )
-            //    if( opts.bind[i] instanceof PotentialNode )
-            //        opts.bind[i] = opts.bind[i][pbExist]();
         }
 
-        // do this?
-        /*
-        [Symbol.for('nodejs.util.inspect.custom')] () {
-            return util.inspect( ... );
-        }
-        */
-
-        const bp = new BuildProxy(this, opts.bind);
-
-        return new Proxy(root, bp);
+        const buildProxyHandler = new BuildProxy(this, opts.bind);
+        const buildProxy = new Proxy(root, buildProxyHandler);
+        
+        return [root, buildProxy, buildProxyHandler]
+    }
+    
+    defineTree(root, opts) {
+        return this.makeBuildProxy(root, opts)[1];
     }
     
     defineNewTree(opts) {
-        const T = this.defineTree(null, opts);
-        return [unwrap(T), T];
+        return this.makeBuildProxy(null, opts);
     }
     
     defineObj() {
@@ -108,9 +102,10 @@ class Universe {
     }
     
     defineObjOpt(obj, opts, func) {
-        const bp = this.defineTree(obj, opts);
-        func.apply(null, [bp]);
-        return unwrap(bp);
+        const [root, buildProxy, buildProxyHandler] = this.makeBuildProxy(obj, opts);
+        const buildFactory = new BuildFactory(this, buildProxyHandler);
+        func.apply(null, [buildProxy, buildFactory]);
+        return unwrap( buildProxy );
     }
 }
 exports.Universe = Universe;

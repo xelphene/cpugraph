@@ -10,6 +10,7 @@ const {InputNode} = require('../node/input');
 const {Universe} = require('../universe');
 const {isNodeObj, isAsIs, createNodeObj} = require('./nodeobj');
 
+// TODO: rename to BuildProxyHandler. this isn't an actual Proxy
 class BuildProxy
 {
     constructor( universe, bindings ) {
@@ -18,6 +19,8 @@ class BuildProxy
         this._universe = universe;
         this._bindings = bindings;
     }
+
+    get bindings () { return this._bindings }
     
     log( msg ) {
         if( DEBUG )
