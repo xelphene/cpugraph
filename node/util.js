@@ -2,7 +2,7 @@
 'use strict';
 
 const {Node} = require('./node');
-const {NODE} = require('../consts');
+const {NODE, NODEOBJ} = require('../consts');
 
 class NodeValue {
     constructor(node, value) {
@@ -34,6 +34,25 @@ function isNode (x) {
     return false;
 }
 exports.isNode = isNode;
+
+// TODO: belongs more in tree/
+// that's the only place objects like this are created
+function isPropNode (o, p) {
+    let opd = Object.getOwnPropertyDescriptor(o, p);
+    return opd && opd.get && opd.get[NODE];
+}
+exports.isPropNode = isPropNode;
+
+// TODO: belongs more in tree/
+// that's the only place objects like this are created
+function nodeOfProp (o,p) {
+    let opd = Object.getOwnPropertyDescriptor(o, p);
+    if( opd && opd.get && opd.get[NODE] )
+        return opd.get[NODE]
+    else
+        throw new Error(`Object has no property ${p} which is a Node`);
+}
+exports.nodeOfProp = nodeOfProp;
 
 function hasNode (x) {
     if( typeof(x)=='object' && x.hasOwnProperty(NODE) )

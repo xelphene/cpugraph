@@ -2,7 +2,7 @@
 'use strict';
 
 const {NODEOBJ} = require('../consts');
-const {isNode, nodeOf} = require('../node/util');
+const {isNode, nodeOf, isPropNode} = require('../node/util');
 
 function createNodeObj (universe) {
     var obj = {};
@@ -12,6 +12,8 @@ function createNodeObj (universe) {
 exports.createNodeObj = createNodeObj;
 
 function isNodeObj (o) {
+    if( typeof(o)!='object' )
+        return false;
     if( NODEOBJ in o ) {
         if( o[NODEOBJ] instanceof NodeObjAdjutant )
             return true;
@@ -62,9 +64,9 @@ class NodeObjAdjutant {
         )
     }
     
-    get computeFuncKeys () {
+   get computeFuncKeys () {
         return Object.keys(this._obj).filter(
-            k => isNode(this._obj[k]) || isNodeObj(this._obj[k])
+            k => isPropNode(this._obj, k) || isNodeObj(this._obj[k])
         )
     }
 }
