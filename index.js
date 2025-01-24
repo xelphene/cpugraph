@@ -7,6 +7,7 @@ exports.hasNode = require('./node/util').hasNode;
 exports.isNode = require('./node/util').isNode;
 exports.nodeOfProp = require('./node/util').nodeOfProp;
 exports.isPropNode = require('./node/util').isPropNode;
+exports.unwrap = require('./tree/unwrap').unwrap;
 
 exports.Node = require('./node/node').Node;
 exports.ComputeNode = require('./node/compute').ComputeNode;
