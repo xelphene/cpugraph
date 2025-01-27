@@ -47,7 +47,7 @@ class BuildProxy
     set( o, key, v ) {
         //this.log(`SET. ${key.toString()} = ${v.toString()}`);
         
-        if( typeof(v)=='function' ) {
+        if( typeof(v)=='function' && v.length <= this._bindings.length ) {
             //let n = new ComputeNode({
             //    universe: this._universe,
             //    bind: this._bindings,
@@ -66,6 +66,18 @@ class BuildProxy
                 configurable: true,
                 enumerable: true,
             });
+            return true;
+        }
+
+        if( typeof(v)=='function' && v.length > this._bindings.length ) {
+            const buildProxyHandler = this;
+            o[key] = function () {
+                var args = buildProxyHandler.bindings.map(
+                    x => isNode(x) ? nodeOf(x).value : x
+                )
+                args = args.concat([...arguments]);
+                return v.apply(this, args);
+            }
             return true;
         }
         
