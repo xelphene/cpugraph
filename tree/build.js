@@ -38,8 +38,12 @@ class BuildProxy
         if( opd && opd.get && opd.get[NODE] )
             return opd.get[NODE];
         
-        if( isNodeObj(Reflect.get(o, key)) )
-            return new Proxy(o[key], new BuildProxy(this._universe, this._bindings) );
+        if( isNodeObj(Reflect.get(o, key)) ) {
+            if( o[key][NODEOBJ].BuildProxyHandler !== undefined )
+                return new Proxy(o[key], new o[key][NODEOBJ].BuildProxyHandler(this._universe, this._bindings) );
+            else
+                return new Proxy(o[key], new BuildProxy(this._universe, this._bindings) );
+        }
                     
         return Reflect.get(o, key);
     }
