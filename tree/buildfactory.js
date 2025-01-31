@@ -22,6 +22,10 @@ class BuildFactory {
     subobj () {
         return createNodeObj(this.universe);
     }
+
+    defineObj () {
+        return this.universe.defineObj(...arguments);
+    }
     
     _getBindFuncArgs () {
         const args = [];

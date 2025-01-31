@@ -6,3 +6,5 @@ exports.hasNode = x => typeof(x)=='object' && x.hasOwnProperty(exports.NODE);
 exports.DEBUG = false;
 exports.NODEOBJ = Symbol('NODEOBJ');
 exports.subobj = Symbol('subobj');
+
+exports.THIS = Symbol('THIS');

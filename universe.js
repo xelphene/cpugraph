@@ -7,6 +7,7 @@ const {ComputeNode} = require('./node/compute');
 const {Mapper} = require('./mapper');
 const {createNodeObj, isNodeObj} = require('./tree/nodeobj');
 const {BuildFactory} = require('./tree/buildfactory');
+const {THIS} = require('./consts');
 
 class Universe {
     constructor() {
@@ -66,8 +67,10 @@ class Universe {
         if( opts===undefined )
             opts = {};
         else if( Array.isArray(opts) ) {
-            for( let i=0; i<opts.length; i++ )
-                opts[i] = unwrap(opts[i]);
+            for( let i=0; i<opts.length; i++ ) {
+                if( opts[i] !== THIS )
+                    opts[i] = unwrap(opts[i]);
+            }
             opts = {bind: opts};
         }
 
@@ -83,7 +86,12 @@ class Universe {
             opts.bind = [root];
         else {
         }
-
+        
+        for( let i=0; i<opts.bind.length; i++ )
+            if( opts.bind[i] === THIS ) {
+                opts.bind[i] = root;
+            }
+        
         const buildProxyHandler = new BuildProxy(this, opts.bind);
         const buildProxy = new Proxy(root, buildProxyHandler);
         
@@ -105,11 +113,19 @@ class Universe {
             var obj = null;
             var func = arguments[0];
             var opts = {};
-        } else {
-            var obj = arguments[0];
-            var func = arguments[1];
-            var opts = {};
-        }
+        } else if( arguments.length==2 ) {
+            if( Array.isArray(arguments[0]) && typeof(arguments[1])=='function' ) {
+                var obj = null;
+                var func = arguments[1];
+                var opts = arguments[0];
+            } else {
+                var obj = arguments[0];
+                var func = arguments[1];
+                var opts = {};
+            }
+        } else
+            throw new Error(`Wrong number of arguments (${arguments.length}) to Universe.defineObj()`);
+            
         return this.defineObjOpt(obj, opts, func);
     }
     

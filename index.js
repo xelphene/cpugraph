@@ -2,6 +2,7 @@
 'use strict';
 
 exports.NODE = require('./consts').NODE;
+exports.THIS = require('./consts').THIS;
 exports.nodeOf = require('./node/util').nodeOf;
 exports.hasNode = require('./node/util').hasNode;
 exports.isNode = require('./node/util').isNode;
