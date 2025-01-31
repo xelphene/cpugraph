@@ -55,21 +55,29 @@ class Universe {
     }
     
     get constraints () { return this._cc }
+
+    // TODO: makeBuildPRoxy and define* are a mess.  repurpose 'opts' as
+    // just an optional array of bindings.  that's all its ever use for
+    // anyway.  or at least do this in one of the define* funcs
     
     makeBuildProxy(root, opts) {
         const {BuildProxy} = require('./tree/build');
         
         if( opts===undefined )
             opts = {};
-        else if( Array.isArray(opts) )
+        else if( Array.isArray(opts) ) {
+            for( let i=0; i<opts.length; i++ )
+                opts[i] = unwrap(opts[i]);
             opts = {bind: opts};
+        }
 
         if( root===undefined || root===null )
             //root = {};
             root = createNodeObj(this);
-        else
+        else {
             if( ! isNodeObj(root) )
                 throw new Error(`root is not a NodeObj`);
+        }
 
         if( opts.bind===undefined )
             opts.bind = [root];
@@ -106,6 +114,8 @@ class Universe {
     }
     
     defineObjOpt(obj, opts, func) {
+        if( obj!==undefined && obj!==null )
+            obj = unwrap(obj)
         const [root, buildProxy, buildProxyHandler] = this.makeBuildProxy(obj, opts);
         const buildFactory = new BuildFactory(this, buildProxyHandler);
         func.apply(null, [buildProxy, buildFactory]);
