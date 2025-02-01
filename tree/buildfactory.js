@@ -47,5 +47,12 @@ class BuildFactory {
             return origFunc.apply(this, args);
         });
     }
+    
+    node (func) {
+        return this.universe.addCompute({
+            bind: this.buildProxyHandler.bindings,
+            func
+        })
+    }
 }
 exports.BuildFactory = BuildFactory;
