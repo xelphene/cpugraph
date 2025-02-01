@@ -52,14 +52,12 @@ class BuildProxy
         //this.log(`SET. ${key.toString()} = ${v.toString()}`);
         
         if( typeof(v)=='function' && v.length <= this._bindings.length ) {
-            //let n = new ComputeNode({
-            //    universe: this._universe,
-            //    bind: this._bindings,
-            //    func: v,
-            //    debugName: key
-            //});
+            // binding 'this' here to the specific object 'o', which is different
+            // to the next case (assignment of an ordinary function)
+            // but this is similar to how this is bound for getters in JS
             let n = this._universe.addCompute({
                 bind: this._bindings,
+                bindThis: o,
                 func: v,
                 debugName: key
             });

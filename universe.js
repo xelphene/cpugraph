@@ -43,8 +43,8 @@ class Universe {
         return m;
     }
     
-    addCompute({bind, func, debugName}) {
-        const n = new ComputeNode({bind, func, debugName, universe: this});
+    addCompute({bind, bindThis, func, debugName}) {
+        const n = new ComputeNode({bind, bindThis, func, debugName, universe: this});
         this._nodes.add(n);
         return n;
     }
