@@ -45,10 +45,9 @@ const nodeValueProxyHandler = {
         return node.rawValue.keys().concat(NODE);
     },
     has: (node, key) => {
-        //console.log(key);
         if( key===NODE )
             return true;
-        return key in node.rawValue || node.rawValue.hasItem(key);
+        return key in node.rawValue || Reflect.has(node.rawValue,key);
     },
     defineProperty: (node, key, descriptor) => {
         if( key===NODE )
