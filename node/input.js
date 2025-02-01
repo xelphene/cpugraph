@@ -33,7 +33,7 @@ class InputNode extends Node {
     get value () {
         //return getNodeValueProxy(this);
         if( typeof(this._value) != 'object' )
-            return getValueProxy( this, new NodeValue(this._value) );
+            return getValueProxy( this, new NodeValue(this, this._value) );
         else
             return getValueProxy( this, this._value );
     }
