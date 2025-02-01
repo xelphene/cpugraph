@@ -49,6 +49,24 @@ class NodeObjAdjutant {
         else
             this.universe = null;
     }
+
+    log (path) {
+        if( path===undefined )
+            path = [];
+        
+        for( let k of this.computeFuncKeys ) 
+        {
+            const path2 = path.concat([k]);
+            
+            if( isNodeObj(this._obj[k]) ) {
+                //console.log(`${path2.join('.')}:  ...`)
+                this._obj[k][NODEOBJ].log( path2 )
+            } else {
+                const v = ''+this._obj[k];
+                console.log(`${path2.join('.')}:  ${v}`)
+            }
+        }
+    }
     
     // return a list of all keys on this._obj whose values are
     // supplied by Nodes. these will be accessible to computeFuncs
@@ -64,10 +82,14 @@ class NodeObjAdjutant {
         )
     }
     
-   get computeFuncKeys () {
+   getComputeFuncKeys () {
         return Object.keys(this._obj).filter(
             k => isPropNode(this._obj, k) || isNodeObj(this._obj[k])
         )
+    }
+    
+    get computeFuncKeys () {
+        return this.getComputeFuncKeys();
     }
 }
 exports.NodeObjAdjutant = NodeObjAdjutant;
