@@ -11,8 +11,8 @@ class BuildFactory {
         this.buildProxyHandler = buildProxyHandler;
     }
     
-    input () {
-        return this.universe.addInput(arguments);
+    input (initValue) {
+        return this.universe.addInput({value:initValue});
     }
     
     asIs (v) {
