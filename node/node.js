@@ -3,6 +3,7 @@
 
 const {NODE} = require('../consts');
 const {Channel} = require('./channel');
+const {ConstraintViolation} = require('../errors');
 
 class Node {
     constructor ({universe, debugName}) {
@@ -43,6 +44,26 @@ class Node {
             }
         }
         return new Proxy( universe.map, uMapProxyHandler);
+    }
+    
+    addConstraint (c) { this._constraints.add(c) }
+
+    * iterConstraints () {
+        for( let c of this._constraints )
+            yield c
+    }
+    
+    checkConstraints() {
+        for( let c of this.iterConstraints() ) {
+            if( ! c.check() )
+                throw new ConstraintViolation({
+                    node: this,
+                    constraint: c,
+                    value: this.constraintCheckValue
+                });
+            //if( ! c.checkValueForNode(this, value) )
+            //    throw new ConstraintViolation({node: this, constraint: c, value});
+        }
     }
 
 }

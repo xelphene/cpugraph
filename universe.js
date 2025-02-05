@@ -144,6 +144,13 @@ class Universe {
         func.apply(null, [buildProxy, buildFactory]);
         return unwrap( buildProxy );
     }
+
+    get nodes () { return this._nodes }
+
+    checkConstraints () {
+        for( let n of this.nodes )
+            n.checkConstraints()
+    }
 }
 exports.Universe = Universe;
 

@@ -36,7 +36,7 @@ class MapNode extends Node {
     }
     
     compute () {
-        const v = this._mapper.fwdMap( this._srcNode.value );
+        var v = this._mapper.fwdMap( this._srcNode.value );
         if( typeof(v) != 'object' )
             v = new NodeValue(this, v);
         this._value = v;
@@ -53,8 +53,15 @@ class MapNode extends Node {
             throw new Error(`srcNode is not settable`);
         this._srcNode.value = this._mapper.revMap( v );
     }
+
+    get constraintCheckValue () {
+        if( ! this._fresh )
+            this.compute();
+        return this._value;
+    }
     
     get rawValue () { 
+        this.checkConstraints();
         if( ! this._fresh )
             this.compute();
         return this._value;

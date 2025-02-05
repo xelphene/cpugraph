@@ -24,21 +24,32 @@ class InputNode extends Node {
         
         //this._sayNewValue();
         this._sayNewValue();
+
+        if( this._universe !== undefined ) {
+            // TODO: this is slow. unecessarily checking every single node.
+            this._universe.checkConstraints();
+        }
     }
     
     get rawValue () {
+        this.checkConstraints();
+        return this._value;
+    }
+
+    get constraintCheckValue () {
         return this._value;
     }
     
     get value () {
         //return getNodeValueProxy(this);
         if( typeof(this._value) != 'object' )
-            return getValueProxy( this, new NodeValue(this, this._value) );
+            return getValueProxy( this, new NodeValue(this, this.rawValue) );
         else
-            return getValueProxy( this, this._value );
+            return getValueProxy( this, this.rawValue );
     }
     
     get settable () { return true }
+        
 }
 mixinBlabSpeak(InputNode,['NewValue']);
 exports.InputNode = InputNode;

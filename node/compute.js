@@ -129,6 +129,13 @@ class ComputeNode extends Node {
 
     // should *only* be called from nodeValueProxyHandler
     get rawValue () { 
+        this.checkConstraints();
+        if( ! this._fresh )
+            this.compute();
+        return this._value;
+    }
+
+    get constraintCheckValue () {
         if( ! this._fresh )
             this.compute();
         return this._value;
