@@ -115,6 +115,8 @@ class BuildProxy
         }
                 
         if( hasNode(v) ) {
+            if( ! nodeOf(v).hasDebugName )
+                nodeOf(v).debugName = key
             let g = () => nodeOf(v).value;
             g[NODE] = nodeOf(v);
             if( nodeOf(v).settable ) {
@@ -133,8 +135,9 @@ class BuildProxy
             return true;
         }
 
-        // TODO: is this not redundant with if( hasNode(v) ) now?
         if( v instanceof Node ) {
+            if( ! v.hasDebugName )
+                v.debugName = key
             let g = () => v.value;
             g[NODE] = v;
             if( v.settable ) {

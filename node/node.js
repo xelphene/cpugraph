@@ -7,15 +7,18 @@ const {Channel} = require('./channel');
 class Node {
     constructor ({universe, debugName}) {
         this._universe = universe;
-
-        if( debugName!==undefined )
-            this._debugName = debugName;
-        else
-            this._debugName = this.constructor.name;
+        this._constraints = new Set();
+        this._debugName = debugName;
     }
     
     get universe ()   { return this._universe }
-    get debugName ()  { return this._debugName }
+    get hasDebugName () { return this._debugName!==undefined }
+    get debugName ()  {
+        if( this._debugName!==undefined )
+            return this._debugName
+        else
+            return this.constructor.name;
+    }
     set debugName (n) { this._debugName = n }
     
     get [NODE] () { return this }
