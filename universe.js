@@ -4,6 +4,7 @@
 const {unwrap} = require('./tree/unwrap');
 const {InputNode} = require('./node/input');
 const {ComputeNode} = require('./node/compute');
+const {MapNode} = require('./node/map');
 const {Mapper} = require('./mapper');
 const {createNodeObj, isNodeObj} = require('./tree/nodeobj');
 const {BuildFactory} = require('./tree/buildfactory');
@@ -51,6 +52,12 @@ class Universe {
     
     addInput({value, debugName}) {
         const n = new InputNode({debugName, value, universe: this});
+        this._nodes.add(n);
+        return n;
+    }
+
+    addMap({debugName, mapper, srcNode}) {
+        const n = new MapNode({debugName, mapper, srcNode, universe:this});
         this._nodes.add(n);
         return n;
     }

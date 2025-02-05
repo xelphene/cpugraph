@@ -98,11 +98,15 @@ class Mapper {
         if( this._srcNodeToMapNode.has(srcNode) )
             return this._srcNodeToMapNode.get(srcNode)
         
-        const mn = new MapNode({
-            universe: this._universe,
-            mapper: this,
-            srcNode
-        });
+        if( this._universe !== undefined )
+            var mn = this._universe.addMap({mapper: this, srcNode})
+        else
+            var mn = new MapNode({
+                universe: this._universe,
+                mapper: this,
+                srcNode
+            });
+        
         this._mapNodes.add(mn);
         this._srcNodeToMapNode.set(srcNode, mn);
         return mn;
