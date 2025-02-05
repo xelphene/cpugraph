@@ -46,6 +46,7 @@ function main () {
     if( mAA.mapper.hasMapForSrc(mB) ) {
         console.log(`mAA's mapper has a map for mB`);
         console.log( mAA.mapper.existingMapNode(mB) === mBB )
+        console.log( mAA.mapper.existingMapNode(mB).value )
     }
 
     return;
