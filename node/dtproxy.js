@@ -39,7 +39,10 @@ class DTProxyHandler {
                 throw new Error(`Attempt to access non-nodal key ${key} via DTProxy`);
             return new Proxy(v, this);
         } else {
-            throw new Error(`Attempt to access key ${key} whose value is neither a Node nor a NodeObj`);
+            if( v===undefined )
+                throw new Error(`Attempt to access key ${key} whose value is undefined`);
+            else
+                throw new Error(`Attempt to access key ${key} whose value is neither a Node nor a NodeObj`);
         }
         /*
         } else if( typeof(v)=='object' ) {
