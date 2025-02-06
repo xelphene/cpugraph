@@ -1,4 +1,10 @@
 
+# BuildProxy consolidation
+
+merge 'o = func', 'o = hasNode(v)', 'o = Node' into an assignNode method
+
+example in map_plane.js BuildProxy
+
 # Constraint Check Efficiency
 
 make constraint checks after assignment more efficient
