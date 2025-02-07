@@ -27,3 +27,5 @@ exports.NodeObjAdjutant = require('./tree/nodeobj').NodeObjAdjutant;
 exports.universe = require('./universe');
 exports.Universe = exports.universe.Universe;
 exports.constraint = require('./constraint');
+
+exports.ConstraintViolation = require('./errors').ConstraintViolation;
