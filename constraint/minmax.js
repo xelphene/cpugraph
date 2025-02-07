@@ -2,37 +2,53 @@
 'use strict';
 
 const {BinaryConstraint} = require('./binary');
+const {Constraint} = require('./base');
+const {Node} = require('../node/node');
 
-class MinMaxConstraint extends BinaryConstraint {
-    constructor({nodeA, op, nodeB}) {
-        super({nodeA, op, nodeB})
+class LtEq extends BinaryConstraint {
+    static get opStr () { return '<=' }
+    
+    check () {
+        return this.nodeA.constraintCheckValue <= this.nodeB.constraintCheckValue
     }
     
-    get validOps () { return ['>=','<='] }
+    getBoundaryForNode(node) {
+        if( node===this.nodeA ) {
+            return ['max', this.nodeB.value];
+        } else {
+            return ['min', this.nodeA.value];
+        }
+    }
+}
+exports.LtEq = LtEq;
+
+class GtEq extends BinaryConstraint {
+    static get opStr () { return '>=' }
+    
+    check () {
+        return this.nodeA.constraintCheckValue >= this.nodeB.constraintCheckValue
+    }
 
     getBoundaryForNode(node) {
         if( node===this.nodeA ) {
-            if( this.op=='>=' )
-                return ['min', this.nodeB.value];
-            else
-                return ['max', this.nodeB.value];
+            return ['min', this.nodeB.value];
         } else {
-            if( this.op=='>=' )
-                return ['max', this.nodeA.value];
-            else
-                return ['min', this.nodeA.value];
+            return ['max', this.nodeA.value];
         }
     }
-    
-    check () {
-        if( this.op == '>=' )
-            return this.nodeA.constraintCheckValue >= this.nodeB.constraintCheckValue;
-        else
-            return this.nodeA.constraintCheckValue <= this.nodeB.constraintCheckValue;
-    }
-    
-    get debugName () {
-        return `${this.nodeA.debugName} ${this.op} ${this.nodeB.debugName}`
-    }
 }
-exports.MinMaxConstraint = MinMaxConstraint;
+exports.GtEq = GtEq;
+
+const cClasses = [LtEq, GtEq];
+
+function ensureNum(nodeA, op, nodeB) {
+    for( let cls of cClasses ) {
+        if( cls.matchesEnsure([...arguments]) ) {
+            //console.log(arguments);
+            const c = cls.ensure(...arguments);
+            return c
+        }
+    }
+    throw new Error(`No applicable Constraint class`);
+}
+exports.ensureNum = ensureNum;

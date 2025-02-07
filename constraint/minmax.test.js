@@ -1,8 +1,11 @@
 
 'use strict';
 
-const ensure = require('./ensure');
+const {ensure} = require('./ensure');
 const {Universe, unwrap, nodeOf} = require('../');
+//const {LtEq, GtEq} = require('../constraint/minmax');
+const {ensureNum} = require('../constraint/minmax');
+const {ensureFunc} = require('../constraint/bindfunc');
 
 beforeEach(() => { global.console = require('console'); });
 
@@ -17,19 +20,23 @@ function getTree(ensures)
     T.ib = F.input(80);
 
     if( ensures.includes('input') )
-        ensure.rel( T.ia, '<=', T.ib );
+        ensureNum( T.ia, '<=', T.ib );
+        //ensure( T.ia, LtEq, T.ib );
 
     T.ca = t => t.ia + 10;
     T.cb = t => t.ib - 10;
+    ensureFunc( [T.cb], cb => cb != 190 );
     
     if( ensures.includes('compute') )
-        ensure.rel( T.ca, '<=', T.cb );
+        ensureNum( T.ca, '<=', T.cb );
+        //ensure( T.ca, LtEq, T.cb );
 
     universe.registerMap('x10', v => v*10, v => v/10 );
     T.ma = T.ca.map.x10( T.ca );
     T.mb = T.cb.map.x10( T.cb );
     if( ensures.includes('map') )
-        ensure.rel( T.ma, '<=', T.mb );
+        ensureNum( T.ma, '<=', T.mb );
+        //ensure( T.ma, LtEq, T.mb );
     
     //////////////////////////////////
 
@@ -86,4 +93,13 @@ test('set ia > ib so map constraint is violated', () =>
     
     expect( 0+t.ia ).toBe( 34 );
     expect( 0+t.ib ).toBe( 80 );
+});
+
+test('set ib so that bindFuncConstraint is violated', () =>
+{
+    const t = getReadyTree(['map']);
+    expect( 0+t.ib ).toBe( 80 )
+    expect( 0+t.cb ).toBe( 70 )
+    
+    expect( () => {t.ib = 200} ).toThrow('Constraint Violation: cb => cb != 190 args=190');
 });
