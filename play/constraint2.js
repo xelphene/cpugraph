@@ -61,8 +61,8 @@ function main ()
 
     console.log('=========================');
     
-    t.ia = 30;
-    console.log( t.ca );
+    //t.ia = 30;
+    //console.log( t.ca );
 
     for( let n of universe.nodes ) {
         console.log(`*: ${n.debugName}  ${n.constraintCheckValue}`);

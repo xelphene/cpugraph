@@ -25,11 +25,23 @@ class BinaryConstraint extends Constraint {
     }
 
     toString () {
-        return `${this.constructor.name} ${this.nodeA.debugName} ${this.constructor.opStr} ${this.nodeB.debugName}`;
+        if( this.constructor.opStr!==undefined )
+            var opStr = this.constructor.opStr
+        else if( this.opStr !== undefined )
+            var opStr = this.opStr
+        else
+            var opStr = '?'
+        return `${this.constructor.name} ${this.nodeA.debugName} ${opStr} ${this.nodeB.debugName}`;
     }
     
     toStringWithValues () {
-        return `${this.nodeA.debugName} ${this.nodeA.constraintCheckValue} ${this.constructor.opStr} ${this.nodeB.constraintCheckValue} ${this.nodeB.debugName}`;
+        if( this.constructor.opStr!==undefined )
+            var opStr = this.constructor.opStr
+        else if( this.opStr !== undefined )
+            var opStr = this.opStr
+        else
+            var opStr = '?'
+        return `${this.nodeA.debugName} ${this.nodeA.constraintCheckValue} ${opStr} ${this.nodeB.constraintCheckValue} ${this.nodeB.debugName}`;
     }
     
     get nodes () { return [this.nodeA, this.nodeB] }
