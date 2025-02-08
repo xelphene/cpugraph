@@ -140,7 +140,7 @@ class Universe {
         if( obj!==undefined && obj!==null )
             obj = unwrap(obj)
         const [root, buildProxy, buildProxyHandler] = this.makeBuildProxy(obj, opts);
-        const buildFactory = new BuildFactory(this, buildProxyHandler);
+        const buildFactory = new BuildFactory(this, buildProxyHandler.bindings);
         func.apply(null, [buildProxy, buildFactory]);
         return unwrap( buildProxy );
     }

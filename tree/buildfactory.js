@@ -6,9 +6,9 @@ const {AsIs, createNodeObj} = require('./nodeobj');
 const {isNode, nodeOf} = require('../node/util');
 
 class BuildFactory {
-    constructor(universe, buildProxyHandler) {
+    constructor(universe, bindings) {
         this.universe = universe;
-        this.buildProxyHandler = buildProxyHandler;
+        this.bindings = bindings;
     }
     
     input (initValue) {
@@ -30,7 +30,7 @@ class BuildFactory {
     _getBindFuncArgs () {
         const args = [];
         
-        for( let b of this.buildProxyHandler.bindings ) {
+        for( let b of this.bindings ) {
             if( isNode(b) )
                 args.push( nodeOf(b).value )
             else
@@ -50,7 +50,7 @@ class BuildFactory {
     
     node (func) {
         return this.universe.addCompute({
-            bind: this.buildProxyHandler.bindings,
+            bind: this.bindings,
             func
         })
     }
