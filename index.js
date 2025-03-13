@@ -26,6 +26,8 @@ exports.createNodeObj = require('./tree/nodeobj').createNodeObj;
 exports.NodeObjAdjutant = require('./tree/nodeobj').NodeObjAdjutant;
 exports.universe = require('./universe');
 exports.Universe = exports.universe.Universe;
+
 exports.constraint = require('./constraint');
+exports.ensureFunc = require('./constraint/bindfunc').ensureFunc;
 
 exports.ConstraintViolation = require('./errors').ConstraintViolation;
