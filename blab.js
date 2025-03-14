@@ -195,7 +195,8 @@ function mergeMixinClass(mixinClass, cls)
         if( 'value' in propDesc && typeof(propDesc.value)=='function' ) {
             //console.log(`MIXIN: method: ${mixinClass.name}.${propName} -> ${cls.name}`);
             if( propName in cls.prototype )
-                throw new Error(`class ${cls.name} already has a property named ${propName}`);
+                //throw new Error(`class ${cls.name} already has a property named ${propName}`);
+                continue
             Object.defineProperty(cls.prototype, propName, {
                 value: propDesc.value,
                 writable: propDesc.writable,
@@ -205,7 +206,8 @@ function mergeMixinClass(mixinClass, cls)
         } else if( 'get' in propDesc && typeof(propDesc.get)=='function' ) {
             //console.log(`MIXIN: getter: ${mixinClass.name}.${propName} -> ${cls.name}`);
             if( propName in cls.prototype )
-                throw new Error(`class ${cls.name} already has a property named ${propName}`);
+                //throw new Error(`class ${cls.name} already has a property named ${propName}`);
+                continue
             Object.defineProperty(cls.prototype, propName, {
                 get: propDesc.get,
                 enumerable: propDesc.enumerable,
