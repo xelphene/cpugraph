@@ -16,19 +16,24 @@ class InputNode extends Node {
             this._value = value;
     }
     
-    set value (v) {
+    setValue (v, opts) {
         if( typeof(v) != 'object' )
             v = new NodeValue(this, v);
         
         this._value = v;
         
-        //this._sayNewValue();
         this._sayNewValue();
+        
+        if( opts.checkConstraints ) {
+            if( this._universe === undefined )
+                throw new Error('Universe needed for checkConstraints')
 
-        if( this._universe !== undefined ) {
-            // TODO: this is slow. unecessarily checking every single node.
             this._universe.checkConstraints();
         }
+    }
+    
+    set value (n) {
+        this.setValue(n, {checkConstraints:true})
     }
     
     get rawValue () {
