@@ -24,9 +24,11 @@ class InputNode extends Node {
         
         this._sayNewValue();
         
-        if( opts.checkConstraints ) {
-            if( this._universe === undefined )
-                throw new Error('Universe needed for checkConstraints')
+        if( opts.checkConstraints && this._universe!==undefined ) {
+            // this had been the assumption for a while
+            // should probably change the way this works at some point
+            //if( this._universe === undefined )
+            //    throw new Error('Universe needed for checkConstraints')
 
             this._universe.checkConstraints();
         }
