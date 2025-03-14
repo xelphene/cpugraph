@@ -54,5 +54,12 @@ class BuildFactory {
             func
         })
     }
+    
+    delta( getFunc, setFunc ) {
+        return this.universe.addDelta({
+            getFunc, setFunc,
+            bind: this.bindings
+        })
+    }   
 }
 exports.BuildFactory = BuildFactory;

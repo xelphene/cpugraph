@@ -2,9 +2,11 @@
 'use strict';
 
 const {unwrap} = require('./tree/unwrap');
+const {nodeOf} = require('./node/util')
 const {InputNode} = require('./node/input');
 const {ComputeNode} = require('./node/compute');
 const {MapNode} = require('./node/map');
+const {DeltaNode} = require('./node/delta')
 const {Mapper} = require('./mapper');
 const {createNodeObj, isNodeObj} = require('./tree/nodeobj');
 const {BuildFactory} = require('./tree/buildfactory');
@@ -59,6 +61,14 @@ class Universe {
     addMap({debugName, mapper, srcNode}) {
         const n = new MapNode({debugName, mapper, srcNode, universe:this});
         this._nodes.add(n);
+        return n;
+    }
+
+    addDelta({getFunc, setFunc, bind, bindThis, debugName}) {
+        const n = new DeltaNode({
+            universe:this, getFunc, setFunc, bind, bindThis, debugName
+        })
+        this._nodes.add(n)
         return n;
     }
     
@@ -148,8 +158,56 @@ class Universe {
     get nodes () { return this._nodes }
 
     checkConstraints () {
+        // TODO: this is slow. unecessarily checking every single node.
         for( let n of this.nodes )
             n.checkConstraints()
+    }
+
+    checkConstraintsAll () {
+        var violations = []
+        for( let n of this.nodes ) {
+            violations = violations.concat( n.checkConstraintsAll() )
+        }
+        return violations
+    }
+    
+    setValues (deltas) {
+        for( let [nodeIsh, _] of deltas ) {
+            const node = nodeOf(nodeIsh)
+            
+            if( node.settable ) {
+                // do nothing
+            } else if ( node instanceof DeltaNode ) {
+                // TODO: recurse this op
+                throw new Error('delta recurse not implemented')
+            } else
+                throw new Error(`delta target ${nodeOf(nodeIsh).debugName} is not settable`)
+        }
+        
+        const reversions = []
+
+        for( let [nodeIsh, newValue] of deltas ) {
+            const node = nodeOf(nodeIsh)
+            reversions.push([node, node.value])
+            //node.value = value
+            node.setValue(newValue, {checkConstraints:false})
+        }
+        
+        const cvs = this.checkConstraintsAll()
+        
+        if( cvs.length==0 ) {
+            return {
+                ok: true,
+                cvs
+            }
+        } else {
+            for( let [node,origValue] of this._reversions )
+                node.value = origValue
+            return {
+                ok: false,
+                cvs
+            }
+        }
     }
 }
 exports.Universe = Universe;
