@@ -13,6 +13,7 @@ class Node {
     }
     
     get universe ()   { return this._universe }
+    set universe (u)  { this._universe = u }
     get hasDebugName () { return this._debugName!==undefined }
     get debugName ()  {
         if( this._debugName!==undefined )
@@ -64,6 +65,21 @@ class Node {
             //if( ! c.checkValueForNode(this, value) )
             //    throw new ConstraintViolation({node: this, constraint: c, value});
         }
+    }
+
+    checkConstraintsAll() {
+        const violations = []
+        for( let c of this.iterConstraints() ) {
+            if( ! c.check() )
+                violations.push(new ConstraintViolation({
+                    node: this,
+                    constraint: c,
+                    value: this.constraintCheckValue
+                }))
+            //if( ! c.checkValueForNode(this, value) )
+            //    throw new ConstraintViolation({node: this, constraint: c, value});
+        }
+        return violations
     }
 
 }
