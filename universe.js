@@ -189,7 +189,11 @@ class Universe {
         for( let [nodeIsh, newValue] of deltas ) {
             const node = nodeOf(nodeIsh)
             reversions.push([node, node.value])
-            //node.value = value
+            //node.setValue(newValue, {checkConstraints:false})
+        }
+
+        for( let [nodeIsh, newValue] of deltas ) {
+            const node = nodeOf(nodeIsh)
             node.setValue(newValue, {checkConstraints:false})
         }
         
@@ -201,7 +205,7 @@ class Universe {
                 cvs
             }
         } else {
-            for( let [node,origValue] of this._reversions )
+            for( let [node,origValue] of reversions )
                 node.value = origValue
             return {
                 ok: false,

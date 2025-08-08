@@ -40,12 +40,20 @@ class ComputeNode extends Node {
         this._computeCount = 0;
         this._value = null;
         this._fresh = false;
+        
+        this.wrapValuesInComputeFunc = false
+        this.valueAlwaysAvailable = false
     }
 
     get settable () { return false }
 
     get fresh () { return this._fresh }
     get computeCount () { return this._computeCount }
+
+    treatAsDelta () {
+        this.wrapValuesInComputeFunc = true
+        this.valueAlwaysAvailable = true
+    }
     
     log(msg) {
         if( DEBUG )
@@ -88,7 +96,9 @@ class ComputeNode extends Node {
                 this.dependOn(b);
                 rv.push( b.value );
             } else {
-                rv.push( new Proxy(b, new DTProxyHandler(this) ));
+                rv.push( new Proxy(
+                    b, new DTProxyHandler(this, this.wrapValuesInComputeFunc) 
+                ));
             }
         }
         
@@ -119,7 +129,7 @@ class ComputeNode extends Node {
         let v = this._computeFunc.apply(thisArg, args);
         //this.log(`result ${v}`);
 
-        if( typeof(v) != 'object' )
+        if( typeof(v) != 'object' && typeof(v) != 'function')
             v = new NodeValue(this, v);
 
         this._computeCount++;
@@ -148,7 +158,7 @@ class ComputeNode extends Node {
         // this allows more intuitive syntax to be used during tree
         // construction, which is when the computeFunc could fail because
         // not all of its deps exist yet.
-        if( this._computeCount==0 )
+        if( this._computeCount==0 && !this.valueAlwaysAvailable )
             return getNodeValueProxy( this );
         else
             return getValueProxy( this, this.rawValue );

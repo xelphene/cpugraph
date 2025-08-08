@@ -2,7 +2,8 @@
 'use strict';
 
 const {NODEOBJ} = require('../consts');
-const {isNode, nodeOf, isPropNode} = require('../node/util');
+const {hasNode, isNode, nodeOf, isPropNode} = require('../node/util');
+const {anyToString} = require('../util')
 
 function createNodeObj (universe) {
     var obj = {};
@@ -62,7 +63,11 @@ class NodeObjAdjutant {
                 //console.log(`${path2.join('.')}:  ...`)
                 this._obj[k][NODEOBJ].log( path2 )
             } else {
-                const v = ''+this._obj[k];
+                var v
+                if( hasNode(this._obj[k]) )
+                    v = anyToString( nodeOf(this._obj[k]).rawValue )
+                else
+                    v = typeof(this._obj[k])
                 console.log(`${path2.join('.')}:  ${v}`)
             }
         }
